@@ -1,16 +1,16 @@
-# Vscode Cursor Animations
+# ✨ Vscode Cursor Animations
 
 Adds fancy cursor/selection animations to your VSCode editor.
 
-## Demo
+## 🎬 Demo
 
 ![Demo](./demo/2025-04-09-181753.gif)
 
-## Warning
+## ⚠️ Warning
 
 This extension modifies the vscode files directly. Use at your own risk. May break on updates.
 
-## Installation
+## 📦 Installation
 
 1. Install the extension
 
@@ -27,7 +27,7 @@ This extension modifies the vscode files directly. Use at your own risk. May bre
 
 4. Reload the window according to the prompt.
 
-## Tips
+## 💡 Tips
 
 - To disable cursor blinking, set `"editor.cursorBlinking": "solid"` in your `settings.json`.
 
@@ -41,7 +41,7 @@ This extension modifies the vscode files directly. Use at your own risk. May bre
 }
 ```
 
-## Configuration
+## ⚙️ Configuration
 
 Currently the following options are available to control the animations:
 
@@ -49,7 +49,7 @@ Currently the following options are available to control the animations:
 - `vsc-cursor-animations.opacity`: Opacity of the overlay. Default is `0.65`.
 - `vsc-cursor-animations.backgroundImageUrl`: URL of a background image, which will be used as the background of the overlay. Default is `null`.
 
-## How it works
+## 🛠️ How it works
 
 1. The extension finds the `workbench.html` file, which is responsible for rendering the editor and injects a custom script into it.
 2. Both the script and the extension communicate via websockets.

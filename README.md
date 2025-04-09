@@ -1,6 +1,6 @@
 # Vscode Cursor Animations
 
-Adds fancy cursor/selection animations to your VSCode editor. It works by creating an overlay canvas which is being rendered to using WebGPU.
+Adds fancy cursor/selection animations to your VSCode editor.
 
 ## Demo
 
@@ -48,3 +48,10 @@ Currently the following options are available to control the animations:
 - `vsc-cursor-animations.velocity`: The speed of the animation in pixels per second. Default is `1.45`.
 - `vsc-cursor-animations.opacity`: Opacity of the overlay. Default is `0.65`.
 - `vsc-cursor-animations.backgroundImageUrl`: URL of a background image, which will be used as the background of the overlay. Default is `null`.
+
+## How it works
+
+1. The extension finds the `workbench.html` file, which is responsible for rendering the editor and injects a custom script into it.
+2. Both the script and the extension communicate via websockets.
+3. The script renderes a canvas element on top of the editor.
+4. Using the WebGPU API, the canvas is rendered with a custom shader.

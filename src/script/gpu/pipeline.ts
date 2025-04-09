@@ -1,10 +1,12 @@
+import { AnimationConfiguration } from "../../common/types";
 import fragmentShaderCode from "./assets/fragment.wgsl";
 import vertexShaderCode from "./assets/vertex.wgsl";
 
 export async function createPipeline(
   device: GPUDevice,
   format: GPUTextureFormat,
-  bindGroupLayout: GPUBindGroupLayout
+  bindGroupLayout: GPUBindGroupLayout,
+  config: AnimationConfiguration
 ) {
   const shaderModule = (code: string) => device.createShaderModule({ code });
 
@@ -20,7 +22,9 @@ export async function createPipeline(
       entryPoint: "main",
     },
     fragment: {
-      module: shaderModule(fragmentShaderCode),
+      module: shaderModule(
+        fragmentShaderCode.replace("/*{opacity}*/", config.opacity.toFixed(2))
+      ),
       entryPoint: "main",
       targets: [
         {

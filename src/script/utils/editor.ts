@@ -16,7 +16,7 @@ export class Editor {
     console.log("clear canvas");
   }
 
-  public static async create() {
+  public static async loopUntilEditorElementExists() {
     while (true) {
       const editor = document.querySelector<HTMLElement>(".part.editor");
       if (editor) {

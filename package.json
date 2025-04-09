@@ -22,6 +22,11 @@
           "default": 1.45,
           "description": "Velocity of cursor animations in Pixels per second."
         },
+        "vsc-cursor-animations.opacity": {
+          "type": "number",
+          "default": 0.65,
+          "description": "Opacity of selection area."
+        },
         "vsc-cursor-animations.backgroundImageUrl": {
           "type": "string",
           "description": "Background image URL for the selections."

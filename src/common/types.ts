@@ -1,4 +1,5 @@
 export type AnimationConfiguration = {
+  opacity: number;
   velocityInPxsPerSecond: number;
   backgroundImageUrl?: string;
 };

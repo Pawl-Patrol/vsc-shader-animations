@@ -35,7 +35,12 @@ export class GPUAnimation {
       bindGroupLayout,
       bindGroup,
     } = await createBindGroup(device, config);
-    const pipeline = await createPipeline(device, format, bindGroupLayout);
+    const pipeline = await createPipeline(
+      device,
+      format,
+      bindGroupLayout,
+      config
+    );
 
     return new GPUAnimation(
       canvas,

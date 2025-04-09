@@ -1,8 +1,8 @@
 {
   "name": "vsc-cursor-animations",
   "displayName": "vsc-cursor-animations",
-  "description": "",
-  "version": "0.0.1",
+  "description": "Fancy cursor animations for vscode",
+  "version": "1.0.0",
   "engines": {
     "vscode": "^1.99.0"
   },
@@ -12,6 +12,10 @@
   "activationEvents": [
     "onStartupFinished"
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Pawl-Patrol/vsc-cursor-animations.git"
+  },
   "main": "./dist/extension.js",
   "contributes": {
     "configuration": {
@@ -35,8 +39,8 @@
     },
     "commands": [
       {
-        "command": "vsc-cursor-animations.reload",
-        "title": "Activate/Reload Cursor Animations"
+        "command": "vsc-cursor-animations.toggle",
+        "title": "Toggle Cursor Animations"
       }
     ]
   },

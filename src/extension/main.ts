@@ -20,14 +20,6 @@ export function activate(context: vscode.ExtensionContext) {
     }
   });
 
-  vscode.window.onDidChangeTextEditorSelection((event) => {
-    // wss.clients.forEach((client) => {
-    //   if (client.readyState !== WebSocket.OPEN) {
-    //     return;
-    //   }
-    // });
-  });
-
   vscode.workspace.onDidChangeConfiguration(async (event) => {
     if (event.affectsConfiguration("vsc-cursor-animations")) {
       bridge.sendMessage(await getConfig());
@@ -35,12 +27,11 @@ export function activate(context: vscode.ExtensionContext) {
   });
 
   const disposable = vscode.commands.registerCommand(
-    "vsc-cursor-animations.reload",
+    "vsc-cursor-animations.toggle",
     () => {
-      const scriptFile = context.asAbsolutePath(
-        path.join("dist", "script.bundle.js")
+      patcher.toggle(
+        context.asAbsolutePath(path.join("dist", "script.bundle.js"))
       );
-      patcher.patchHtmlFile(scriptFile);
     }
   );
 

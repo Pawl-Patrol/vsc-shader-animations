@@ -11,20 +11,25 @@ export class Patcher {
   htmlFile: string = possiblePaths.find((p) => fs.existsSync(p))!;
   backupFile: string = `${this.htmlFile}.backup`;
 
-  async patchHtmlFile(scriptFile: string) {
-    await this.restoreBackupIfExists();
-    await this.createBackup();
-    const script = await fs.promises.readFile(scriptFile, "utf8");
-    await this.injectScript(script);
+  async toggle(scriptFile: string) {
+    if (fs.existsSync(this.backupFile)) {
+      await this.restoreBackup();
+    } else {
+      await this.patchHtmlFile(scriptFile);
+    }
     this.needsRestart();
   }
 
-  private async restoreBackupIfExists() {
+  private async patchHtmlFile(scriptFile: string) {
+    await this.createBackup();
+    const script = await fs.promises.readFile(scriptFile, "utf8");
+    await this.injectScript(script);
+  }
+
+  private async restoreBackup() {
     try {
-      if (fs.existsSync(this.backupFile)) {
-        await fs.promises.unlink(this.htmlFile);
-        await fs.promises.rename(this.backupFile, this.htmlFile);
-      }
+      await fs.promises.unlink(this.htmlFile);
+      await fs.promises.rename(this.backupFile, this.htmlFile);
     } catch (e) {
       vscode.window.showErrorMessage(
         "Need admin privilege to patch html file."

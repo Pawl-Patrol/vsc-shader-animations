@@ -1,5 +1,6 @@
 export type AnimationConfiguration = {
   velocityInPxsPerSecond: number;
+  backgroundImageUrl?: string;
 };
 
 type BridgeMessageBase<

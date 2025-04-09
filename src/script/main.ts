@@ -11,14 +11,10 @@ let source: DOMRect | undefined;
 let target: DOMRect;
 
 async function main() {
-  const editor = await Editor.create();
-  const animation = await GPUAnimation.create(editor.canvas);
-  editor.element.addEventListener("resize", () => animation.onCanvasResize());
-
   const bridge = await Bridge.waitUntilConnectionCanBeEstablished();
   bridge.sendMessage({ from: "script", type: "config", payload: {} });
 
-  let config: AnimationConfiguration;
+  let config: AnimationConfiguration = null!;
   const deferred = deferrable<AnimationConfiguration>();
 
   bridge.onMessage((m) => {
@@ -29,6 +25,11 @@ async function main() {
   });
 
   await deferred.promise;
+  console.log("config", config);
+
+  const editor = await Editor.create();
+  const animation = await GPUAnimation.create(editor.canvas, config);
+  editor.element.addEventListener("resize", () => animation.onCanvasResize());
 
   let progress = 0;
   let duration = 0;

@@ -11,10 +11,8 @@ export async function patchHtmlFile(scriptFile: string) {
   const htmlFile = resolveHtmlFile();
 
   // backup
-  if (fs.existsSync(backupName(htmlFile))) {
-    await restoreBackup(htmlFile);
-  }
-  createBackup(htmlFile);
+  await restoreBackupIfExists(htmlFile);
+  await createBackup(htmlFile);
 
   // patch
   const script = await fs.promises.readFile(scriptFile, "utf8");
@@ -25,11 +23,7 @@ export async function patchHtmlFile(scriptFile: string) {
 
 export async function revertChanges() {
   const htmlFile = resolveHtmlFile();
-
-  if (fs.existsSync(backupName(htmlFile))) {
-    await restoreBackup(htmlFile);
-    await fs.promises.unlink(backupName(htmlFile));
-  }
+  await restoreBackupIfExists(htmlFile);
 }
 
 async function injectHtml(htmlFile: string, script: string) {
@@ -62,10 +56,12 @@ async function createBackup(htmlFile: string) {
   }
 }
 
-async function restoreBackup(htmlFile: string) {
+async function restoreBackupIfExists(htmlFile: string) {
   try {
-    await fs.promises.unlink(htmlFile);
-    await fs.promises.copyFile(backupName(htmlFile), htmlFile);
+    if (fs.existsSync(backupName(htmlFile))) {
+      await fs.promises.unlink(htmlFile);
+      await fs.promises.rename(backupName(htmlFile), htmlFile);
+    }
   } catch (e) {
     vscode.window.showErrorMessage("Need admin privilege to patch html file.");
     throw e;

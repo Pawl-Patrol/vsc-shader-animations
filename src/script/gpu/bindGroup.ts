@@ -1,6 +1,10 @@
+import { AnimationConfiguration } from "../../common/types";
 import gradientUrl from "./assets/gradient.jpg";
 
-export async function createBindGroup(device: GPUDevice) {
+export async function createBindGroup(
+  device: GPUDevice,
+  config: AnimationConfiguration
+) {
   const timeBuffer = device.createBuffer({
     size: 8,
     usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
@@ -26,7 +30,10 @@ export async function createBindGroup(device: GPUDevice) {
     usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
   });
 
-  const texture = await loadImage(device, gradientUrl);
+  const texture = await loadImage(
+    device,
+    config.backgroundImageUrl ?? gradientUrl
+  );
 
   const sampler = device.createSampler({
     magFilter: "linear",

@@ -6,13 +6,31 @@ import { patchHtmlFile, revertChanges } from "./patch";
 
 let bridge: Bridge;
 
-function getConfig(): BridgeMessage {
+async function resolveImage(imageUrl: string) {
+  try {
+    const response = await fetch(imageUrl);
+    const contentType = response.headers.get("content-type");
+    const buffer = await response.arrayBuffer();
+    const base64String = Buffer.from(buffer).toString("base64");
+    return `data:${contentType};base64,${base64String}`;
+  } catch (error) {
+    vscode.window.showErrorMessage(
+      `Failed to load image from URL: ${imageUrl}. Error: ${error}`
+    );
+    return undefined;
+  }
+}
+
+async function getConfig(): Promise<BridgeMessage> {
   const config = vscode.workspace.getConfiguration("vsc-cursor-animations");
+  const velocity = config.get<number>("velocity");
+  const imageUrl = config.get<string>("backgroundImageUrl");
   return {
     from: "extension",
     type: "config",
     payload: {
-      velocityInPxsPerSecond: Number(config.get("velocity")),
+      velocityInPxsPerSecond: velocity ? Number(velocity) : 1.45,
+      backgroundImageUrl: imageUrl ? await resolveImage(imageUrl) : undefined,
     },
   };
 }
@@ -23,15 +41,14 @@ export function activate(context: vscode.ExtensionContext) {
   );
 
   bridge = new Bridge();
-  bridge.onMessage((m, reply) => {
+  bridge.onMessage(async (m, reply) => {
     if (m.from === "script" && m.type === "config") {
-      const config = vscode.workspace.getConfiguration("vsc-cursor-animations");
-      reply(getConfig());
+      reply(await getConfig());
     }
   });
 
   const disposable = vscode.commands.registerCommand(
-    "vsc-cursor-animations.restart",
+    "vsc-cursor-animations.reload",
     () => {
       const scriptFile = context.asAbsolutePath(
         path.join("dist", "script.bundle.js")
@@ -50,9 +67,9 @@ export function activate(context: vscode.ExtensionContext) {
     // });
   });
 
-  vscode.workspace.onDidChangeConfiguration((event) => {
+  vscode.workspace.onDidChangeConfiguration(async (event) => {
     if (event.affectsConfiguration("vsc-cursor-animations")) {
-      bridge.sendMessage(getConfig());
+      bridge.sendMessage(await getConfig());
     }
   });
 }

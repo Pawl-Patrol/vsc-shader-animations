@@ -1,3 +1,4 @@
+import { AnimationConfiguration } from "../../common/types";
 import { createBindGroup } from "./bindGroup";
 import { initWebGPU } from "./init";
 import { createPipeline } from "./pipeline";
@@ -19,7 +20,10 @@ export class GPUAnimation {
     new ResizeObserver(this.onCanvasResize.bind(this)).observe(this.canvas);
   }
 
-  public static async create(canvas: HTMLCanvasElement) {
+  public static async create(
+    canvas: HTMLCanvasElement,
+    config: AnimationConfiguration
+  ) {
     const { device, context, format } = await initWebGPU(canvas);
 
     const {
@@ -30,7 +34,7 @@ export class GPUAnimation {
       canvasBuffer,
       bindGroupLayout,
       bindGroup,
-    } = await createBindGroup(device);
+    } = await createBindGroup(device, config);
     const pipeline = await createPipeline(device, format, bindGroupLayout);
 
     return new GPUAnimation(

@@ -21,13 +21,17 @@
           "type": "number",
           "default": 1.45,
           "description": "Velocity of cursor animations in Pixels per second."
+        },
+        "vsc-cursor-animations.backgroundImageUrl": {
+          "type": "string",
+          "description": "Background image URL for the selections."
         }
       }
     },
     "commands": [
       {
-        "command": "vsc-cursor-animations.restart",
-        "title": "Restart Cursor Animations"
+        "command": "vsc-cursor-animations.reload",
+        "title": "Activate/Reload Cursor Animations"
       }
     ]
   },

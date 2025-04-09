@@ -1,10 +1,11 @@
+import * as fs from "fs";
+import * as path from "path";
+import * as vscode from "vscode";
+
 /**
  * Inspired by code from here:
  * https://github.com/be5invis/vscode-custom-css/blob/master/src/extension.js
  */
-import fs from "fs";
-import path from "path";
-import vscode from "vscode";
 
 export async function patchHtmlFile(scriptFile: string) {
   const htmlFile = resolveHtmlFile();
@@ -20,6 +21,15 @@ export async function patchHtmlFile(scriptFile: string) {
   await injectHtml(htmlFile, script);
 
   needsRestart();
+}
+
+export async function revertChanges() {
+  const htmlFile = resolveHtmlFile();
+
+  if (fs.existsSync(backupName(htmlFile))) {
+    await restoreBackup(htmlFile);
+    await fs.promises.unlink(backupName(htmlFile));
+  }
 }
 
 async function injectHtml(htmlFile: string, script: string) {

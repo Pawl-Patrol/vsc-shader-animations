@@ -17,10 +17,10 @@
     "configuration": {
       "title": "Cursor Animations",
       "properties": {
-        "vsc-cursor-animations.enable": {
-          "type": "boolean",
-          "default": true,
-          "description": "Enable cursor animations."
+        "vsc-cursor-animations.velocity": {
+          "type": "number",
+          "default": 1.45,
+          "description": "Velocity of cursor animations in Pixels per second."
         }
       }
     },

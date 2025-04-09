@@ -1,4 +1,5 @@
 import { WEBSOCKET_PORT } from "../common/common";
+import { BridgeMessage } from "../common/types";
 
 export class Bridge {
   private constructor(private socket: WebSocket) {}
@@ -10,11 +11,11 @@ export class Bridge {
     return new Bridge(socket);
   }
 
-  async sendMessage(message: unknown) {
+  async sendMessage(message: BridgeMessage) {
     this.socket.send(JSON.stringify(message));
   }
 
-  async onMessage(callback: (message: unknown) => void) {
+  async onMessage(callback: (message: BridgeMessage) => void) {
     this.socket.onmessage = (event) => {
       const data = JSON.parse(event.data);
       callback(data);

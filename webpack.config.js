@@ -66,8 +66,19 @@ const injectionScriptConfig = {
         use: [
           {
             loader: "ts-loader",
+            options: {
+              configFile: path.resolve(__dirname, "tsconfig.script.json"),
+            },
           },
         ],
+      },
+      {
+        test: /\.wgsl$/,
+        type: "asset/source",
+      },
+      {
+        test: /\.(png|jpg|jpeg|gif|svg)$/i,
+        type: "asset/inline",
       },
     ],
   },

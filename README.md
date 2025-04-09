@@ -6,6 +6,10 @@ Adds fancy cursor/selection animations to your VSCode editor. It works by creati
 
 ![Demo](./demo/2025-04-09-181753.gif)
 
+## Warning
+
+This extension modifies the vscode files directly. Use at your own risk. May break on updates.
+
 ## Installation
 
 1. Install the extension

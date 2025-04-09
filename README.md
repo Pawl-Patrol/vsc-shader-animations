@@ -12,7 +12,7 @@ This extension modifies the vscode files directly. Use at your own risk. May bre
 
 ## 📦 Installation
 
-1. Install the extension
+1. Install the extension using `Install from VSIX` in the extensions tab or using the command line:
 
 ```bash
    code --install-extension vscode-cursor-animations.vsix

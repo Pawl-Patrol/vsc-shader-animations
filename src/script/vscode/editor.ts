@@ -1,4 +1,4 @@
-import { sleep } from "./sleep";
+import { sleep } from "../utils/sleep";
 
 export class Editor {
   public canvas: HTMLCanvasElement;
@@ -22,7 +22,7 @@ export class Editor {
       if (editor) {
         return new Editor(editor);
       }
-      await sleep(100);
+      await sleep(3000);
     }
   }
 

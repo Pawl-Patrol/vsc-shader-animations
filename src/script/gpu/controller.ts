@@ -29,14 +29,10 @@ export class AnimationController {
     const config = await vscode.bridge.waitForMessage("config-response");
     const gpu = await initWebGPU(vscode.editor.canvas);
     const controller = new AnimationController(gpu, vscode, config);
-    controller.startAnimation("cursor-trail"); // TODO: move
+    await controller.startAnimation("cursor-trail"); // TODO: move
   }
 
   setupEvents() {
-    new ResizeObserver(() => this.animation?.onCanvasResize()).observe(
-      this.vscode.editor.element
-    );
-
     this.vscode.bridge.onMessage(async (m) => {
       if (m.type === "config-response") {
         this.animation?.build();
@@ -46,10 +42,10 @@ export class AnimationController {
     });
   }
 
-  startAnimation(name: keyof typeof ANIMATIONS, durationMs?: number) {
+  async startAnimation(name: keyof typeof ANIMATIONS, durationMs?: number) {
     const Animation = ANIMATIONS[name];
     this.animation = new Animation(this.gpu, this.vscode, this.config);
-    this.animation.build();
+    await this.animation.build();
 
     const animate = (time: number) => {
       if (!this.running) {

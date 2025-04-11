@@ -27,6 +27,7 @@ export class CursorTrail extends AnimationBase {
 
   async build() {
     await this.createBuffers();
+    await this.createBindGroupLayout();
     await this.createBindGroup();
     await this.createPipeline();
   }
@@ -100,17 +101,13 @@ export class CursorTrail extends AnimationBase {
     this.gpu.device.queue.submit([commandEncoder.finish()]);
   }
 
-  async onCanvasResize() {
-    const canvasBuffer = this.buffers?.canvasBuffer;
-    if (!canvasBuffer) {
-      return;
-    }
-    const { x, y, width, height } = this.gpu.canvas.getBoundingClientRect();
-    const canvasRect = new Float32Array([x, y, width, height]);
-    this.gpu.device.queue.writeBuffer(canvasBuffer, 0, canvasRect);
-  }
-
   private async updateBuffers() {
+    const { x, y, width, height } = this.gpu.canvas.getBoundingClientRect();
+    this.gpu.device.queue.writeBuffer(
+      this.buffers!.canvasBuffer,
+      0,
+      new Float32Array([x, y, width, height])
+    );
     this.gpu.device.queue.writeBuffer(
       this.buffers!.timeBuffer,
       0,

@@ -10,7 +10,6 @@ export abstract class AnimationBase {
 
   abstract build(): Promise<void>;
   abstract render(time: number): void;
-  abstract onCanvasResize(): Promise<void>;
 
   public clear() {
     const ctx = this.gpu.context.getCurrentTexture();

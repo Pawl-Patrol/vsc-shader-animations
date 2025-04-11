@@ -1,5 +1,6 @@
-import { WEBSOCKET_PORT } from "../common/common";
-import { BridgeMessage } from "../common/types";
+import { WEBSOCKET_PORT } from "../../common/common";
+import { BridgeMessage } from "../../common/types";
+import { deferrable } from "../utils/defer";
 
 export class Bridge {
   private constructor(private socket: WebSocket) {}
@@ -16,10 +17,24 @@ export class Bridge {
   }
 
   async onMessage(callback: (message: BridgeMessage) => void) {
-    this.socket.onmessage = (event) => {
+    this.socket.addEventListener("message", (event) => {
       const data = JSON.parse(event.data);
       callback(data);
+    });
+  }
+
+  async waitForMessage<T extends BridgeMessage["type"]>(type: T) {
+    const deferred = deferrable<(BridgeMessage & { type: T })["payload"]>();
+    const callback = (event: MessageEvent) => {
+      const data = JSON.parse(event.data);
+      if (data.type === type) {
+        deferred.setValue(data.payload);
+      }
     };
+    this.socket.addEventListener("message", callback);
+    await deferred.wait();
+    this.socket.removeEventListener("message", callback);
+    return deferred.getValue();
   }
 }
 

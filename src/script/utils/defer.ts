@@ -19,3 +19,5 @@ export function deferrable<T = void>() {
 
   return { setValue, getValue, wait };
 }
+
+export type Deferrable<T> = ReturnType<typeof deferrable<T>>;

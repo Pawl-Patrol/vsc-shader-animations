@@ -7,8 +7,7 @@ export async function getConfig(): Promise<BridgeMessage> {
   const opacity = config.get<number>("opacity");
   const imageUrl = config.get<string>("backgroundImageUrl");
   return {
-    from: "extension",
-    type: "config",
+    type: "config-response",
     payload: {
       opacity: opacity ? Number(opacity) : 0.5,
       velocityInPxsPerSecond: velocity ? Number(velocity) : 1.45,

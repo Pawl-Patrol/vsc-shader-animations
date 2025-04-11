@@ -15,7 +15,7 @@ export function activate(context: vscode.ExtensionContext) {
   bridge = new Bridge();
 
   bridge.onMessage(async (m, reply) => {
-    if (m.from === "script" && m.type === "config") {
+    if (m.type === "config-request") {
       reply(await getConfig());
     }
   });

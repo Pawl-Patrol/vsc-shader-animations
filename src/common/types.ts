@@ -4,25 +4,18 @@ export type AnimationConfiguration = {
   backgroundImageUrl?: string;
 };
 
-type BridgeMessageBase<
-  TFrom extends "extension" | "script",
-  TType extends string,
-  TPayload extends object
-> = {
-  from: TFrom;
+type BridgeMessageBase<TType extends string, TPayload extends object> = {
   type: TType;
   payload: TPayload;
 };
 
 export type AnimationConfigurationRequest = BridgeMessageBase<
-  "script",
-  "config",
+  "config-request",
   {}
 >;
 
 export type AnimationConfigurationResponse = BridgeMessageBase<
-  "extension",
-  "config",
+  "config-response",
   AnimationConfiguration
 >;
 

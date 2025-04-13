@@ -41,6 +41,10 @@
       {
         "command": "vsc-cursor-animations.toggle",
         "title": "Toggle Cursor Animations"
+      },
+      {
+        "command": "vsc-cursor-animations.hyperspace",
+        "title": "Travel through hyperspace!"
       }
     ]
   },

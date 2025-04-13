@@ -178,7 +178,7 @@ export class WigglyWorm extends AnimationBase {
 
   private async createPipelines() {
     const shaderModule = this.gpu.device.createShaderModule({
-      code: shaderCode.replace("/*{opacity}*/", this.config.opacity.toFixed(2)),
+      code: shaderCode,
     });
 
     const pipelineLayout = this.gpu.device.createPipelineLayout({

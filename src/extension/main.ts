@@ -26,6 +26,37 @@ export function activate(context: vscode.ExtensionContext) {
     }
   });
 
+  let isHandlingSwitch = false;
+  let lastEditorUri: vscode.Uri;
+  vscode.window.onDidChangeActiveTextEditor(async (editor) => {
+    if (!editor || isHandlingSwitch) {
+      return;
+    }
+
+    const formUri = lastEditorUri;
+    const toUri = editor.document.uri;
+    lastEditorUri = toUri;
+
+    if (!formUri) {
+      return;
+    }
+
+    console.log("Switching editors", formUri.toString(), toUri.toString());
+
+    isHandlingSwitch = true;
+
+    if (toUri.toString() === formUri.toString()) {
+      const doc = await vscode.workspace.openTextDocument(formUri);
+      await vscode.window.showTextDocument(doc, { preview: false });
+      bridge.sendMessage({ type: "hyperspace", payload: {} });
+      setTimeout(async () => {
+        const doc = await vscode.workspace.openTextDocument(toUri);
+        await vscode.window.showTextDocument(doc, { preview: false });
+        isHandlingSwitch = false;
+      }, 3500);
+    }
+  });
+
   const disposable = vscode.commands.registerCommand(
     "vsc-cursor-animations.toggle",
     () => {
@@ -35,7 +66,14 @@ export function activate(context: vscode.ExtensionContext) {
     }
   );
 
-  context.subscriptions.push(disposable);
+  const disposable2 = vscode.commands.registerCommand(
+    "vsc-cursor-animations.hyperspace",
+    () => {
+      bridge.sendMessage({ type: "hyperspace", payload: {} });
+    }
+  );
+
+  context.subscriptions.push(disposable, disposable2);
 }
 
 export function deactivate() {

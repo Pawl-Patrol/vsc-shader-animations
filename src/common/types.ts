@@ -19,6 +19,9 @@ export type AnimationConfigurationResponse = BridgeMessageBase<
   AnimationConfiguration
 >;
 
+export type HyperspaceTrigger = BridgeMessageBase<"hyperspace", {}>;
+
 export type BridgeMessage =
   | AnimationConfigurationRequest
-  | AnimationConfigurationResponse;
+  | AnimationConfigurationResponse
+  | HyperspaceTrigger;

@@ -1,18 +1,10 @@
-@group(0) @binding(0)
-var<uniform> time: f32;
-@group(0) @binding(1)
-var<uniform> progress: f32;
-@group(0) @binding(2)
-var<uniform> sourceRect: vec4<f32>;
-@group(0) @binding(3)
-var<uniform> targetRect: vec4<f32>;
-@group(0) @binding(4)
-var<uniform> canvasRect: vec4<f32>;
-
-@group(0) @binding(5)
-var text: texture_2d<f32>;
-@group(0) @binding(6)
-var samp: sampler;
+@group(0) @binding(0) var<uniform> time: f32;
+@group(0) @binding(1) var<uniform> progress: f32;
+@group(0) @binding(2) var<uniform> sourceRect: vec4<f32>;
+@group(0) @binding(3) var<uniform> targetRect: vec4<f32>;
+@group(0) @binding(4) var<uniform> canvasRect: vec4<f32>;
+@group(0) @binding(5) var text: texture_2d<f32>;
+@group(0) @binding(6) var samp: sampler;
 
 const N: u32 = 6;
 
@@ -49,7 +41,7 @@ fn sdPolygon(v: array<vec2<f32>, N>, p: vec2<f32>) -> f32 {
 var<private> positions: array<vec2<f32>, 6>;
 
 @fragment
-fn main(@builtin(position) fragCoord: vec4<f32>) -> @location(0) vec4<f32> {
+fn fragment_main(@builtin(position) fragCoord: vec4<f32>) -> @location(0) vec4<f32> {
     let rect1 = 2.0 * (sourceRect - vec4<f32>(canvasRect.xy, canvasRect.xy)) / vec4<f32>(canvasRect.zw, canvasRect.zw) - 1.0;
     let rect2 = 2.0 * (targetRect - vec4<f32>(canvasRect.xy, canvasRect.xy)) / vec4<f32>(canvasRect.zw, canvasRect.zw) - 1.0;
 
@@ -58,9 +50,7 @@ fn main(@builtin(position) fragCoord: vec4<f32>) -> @location(0) vec4<f32> {
     let progress2 = min(1.0, 1.5 * easedProgress);
 
     let rectA = mix(rect1, rect2, progress1);
-    // Use first float for rectA
     let rectB = mix(rect1, rect2, progress2);
-    // Use second float for rectB
 
     if rect1.x < rect2.x && rect1.y < rect2.y {
         positions = array(rectA.xy, rectA.xw, rectB.xw, rectB.zw, rectB.zy, rectA.zy);
@@ -79,4 +69,16 @@ fn main(@builtin(position) fragCoord: vec4<f32>) -> @location(0) vec4<f32> {
     let uv = fragCoord.xy / canvasRect.zw;
     let textureColor = textureSample(text, samp, uv);
     return vec4<f32>(textureColor.rgb, min(/*{opacity}*/, exp(- d * 100)));
+}
+
+@vertex
+fn vertex_main(@builtin(vertex_index) vertexIndex: u32) -> @builtin(position) vec4<f32> {
+  // render one big square
+    let positions = array<vec2<f32>, 4>(
+        vec2<f32>(-1.0, -1.0),
+        vec2<f32>(1.0, -1.0),
+        vec2<f32>(-1.0, 1.0),
+        vec2<f32>(1.0, 1.0)
+    );
+    return vec4<f32>(positions[vertexIndex], 0.0, 1.0);
 }

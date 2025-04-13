@@ -1,8 +1,7 @@
 import * as rect from "../../utils/rect";
 import { loadImage } from "../loadImage";
-import fragmentShaderCode from "./assets/fragment.wgsl";
+import shaderCode from "./assets/cursor-trail.wgsl";
 import gradientUrl from "./assets/gradient.jpg";
-import vertexShaderCode from "./assets/vertex.wgsl";
 import { AnimationBase } from "./base";
 
 export type CursorTrailBuffers = {
@@ -255,25 +254,21 @@ export class CursorTrail extends AnimationBase {
   }
 
   private async createPipeline() {
-    const shaderModule = (code: string) =>
-      this.gpu.device.createShaderModule({ code });
+    const shaderModule = this.gpu.device.createShaderModule({
+      code: shaderCode.replace("/*{opacity}*/", this.config.opacity.toFixed(2)),
+    });
 
     this.pipeline = this.gpu.device.createRenderPipeline({
       layout: this.gpu.device.createPipelineLayout({
         bindGroupLayouts: [this.bindGroupLayout!],
       }),
       vertex: {
-        module: shaderModule(vertexShaderCode),
-        entryPoint: "main",
+        module: shaderModule,
+        entryPoint: "vertex_main",
       },
       fragment: {
-        module: shaderModule(
-          fragmentShaderCode.replace(
-            "/*{opacity}*/",
-            this.config.opacity.toFixed(2)
-          )
-        ),
-        entryPoint: "main",
+        module: shaderModule,
+        entryPoint: "fragment_main",
         targets: [
           {
             format: this.gpu.format,

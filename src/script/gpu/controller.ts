@@ -3,11 +3,13 @@ import { Bridge } from "../vscode/bridge";
 import { Editor } from "../vscode/editor";
 import { AnimationBase } from "./animation/base";
 import { CursorTrail } from "./animation/CursorTrail";
+import { WigglyWorm } from "./animation/WigglyWorm";
 import { initWebGPU } from "./initWebGPU";
 import { GPUContext, VscodeContext } from "./types";
 
 const ANIMATIONS = {
   "cursor-trail": CursorTrail,
+  "wiggly-worm": WigglyWorm,
 } satisfies Record<string, typeof AnimationBase>;
 
 export class AnimationController {
@@ -29,7 +31,7 @@ export class AnimationController {
     const config = await vscode.bridge.waitForMessage("config-response");
     const gpu = await initWebGPU(vscode.editor.canvas);
     const controller = new AnimationController(gpu, vscode, config);
-    await controller.startAnimation("cursor-trail"); // TODO: move
+    await controller.startAnimation("wiggly-worm"); // TODO: move
   }
 
   setupEvents() {

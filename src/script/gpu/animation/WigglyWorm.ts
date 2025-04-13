@@ -23,9 +23,9 @@ export class WigglyWorm extends AnimationBase {
     await this.createPipelines();
   }
 
-  render(time: number) {
+  render(time: number, clear: boolean) {
     this.update(time);
-    this.draw();
+    this.draw(clear);
   }
 
   private update(time: number) {
@@ -40,7 +40,7 @@ export class WigglyWorm extends AnimationBase {
     }
   }
 
-  private draw() {
+  private draw(clear: boolean) {
     this.updateBuffers();
 
     const commandEncoder = this.gpu.device.createCommandEncoder();
@@ -58,9 +58,9 @@ export class WigglyWorm extends AnimationBase {
       colorAttachments: [
         {
           view: textureView,
-          loadOp: "clear",
+          loadOp: clear ? "clear" : "load",
           storeOp: "store",
-          clearValue: [0.0, 0.0, 0.0, 0.0],
+          clearValue: { r: 0, g: 0, b: 0, a: 0 },
         },
       ],
     };
@@ -202,7 +202,24 @@ export class WigglyWorm extends AnimationBase {
       fragment: {
         module: shaderModule,
         entryPoint: "image_fragment_main",
-        targets: [{ format: this.gpu.format }],
+        targets: [
+          {
+            format: this.gpu.format,
+            blend: {
+              color: {
+                srcFactor: "one",
+                dstFactor: "one-minus-src-alpha",
+                operation: "add",
+              },
+              alpha: {
+                srcFactor: "one",
+                dstFactor: "one-minus-src-alpha",
+                operation: "add",
+              },
+            },
+            writeMask: GPUColorWrite.ALL,
+          },
+        ],
       },
       primitive: {
         topology: "triangle-strip",

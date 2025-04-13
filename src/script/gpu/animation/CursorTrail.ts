@@ -31,10 +31,10 @@ export class CursorTrail extends AnimationBase {
     await this.createPipeline();
   }
 
-  render(time: number) {
+  render(time: number, clear: boolean) {
     const nextCursor = this.update(time);
     if (nextCursor) {
-      this.draw();
+      this.draw(clear);
     } else {
       this.clear();
     }
@@ -75,7 +75,7 @@ export class CursorTrail extends AnimationBase {
     return nextCursor;
   }
 
-  private draw() {
+  private draw(clear: boolean) {
     this.updateBuffers();
 
     const commandEncoder = this.gpu.device.createCommandEncoder();
@@ -85,8 +85,9 @@ export class CursorTrail extends AnimationBase {
       colorAttachments: [
         {
           view: textureView,
-          loadOp: "load",
+          loadOp: clear ? "clear" : "load",
           storeOp: "store",
+          clearValue: { r: 0, g: 0, b: 0, a: 0 },
         },
       ],
     };

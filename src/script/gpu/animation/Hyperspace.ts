@@ -20,12 +20,12 @@ export class Hyperspace extends AnimationBase {
     await this.createPipeline();
   }
 
-  render(time: number) {
+  render(time: number, clear: boolean) {
     this.time = time;
-    this.draw();
+    this.draw(clear);
   }
 
-  private draw() {
+  private draw(clear: boolean) {
     this.updateBuffers();
 
     const commandEncoder = this.gpu.device.createCommandEncoder();
@@ -34,9 +34,9 @@ export class Hyperspace extends AnimationBase {
       colorAttachments: [
         {
           view: textureView,
-          loadOp: "clear",
+          loadOp: clear ? "clear" : "load",
           storeOp: "store",
-          clearValue: [0.0, 0.0, 0.0, 0.0],
+          clearValue: { r: 0, g: 0, b: 0, a: 0 },
         },
       ],
     };
@@ -109,7 +109,24 @@ export class Hyperspace extends AnimationBase {
       fragment: {
         module: shaderModule,
         entryPoint: "fragment_main",
-        targets: [{ format: this.gpu.format }],
+        targets: [
+          {
+            format: this.gpu.format,
+            blend: {
+              color: {
+                srcFactor: "one",
+                dstFactor: "one-minus-src-alpha",
+                operation: "add",
+              },
+              alpha: {
+                srcFactor: "one",
+                dstFactor: "one-minus-src-alpha",
+                operation: "add",
+              },
+            },
+            writeMask: GPUColorWrite.ALL,
+          },
+        ],
       },
       primitive: {
         topology: "triangle-strip",

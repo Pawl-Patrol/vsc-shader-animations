@@ -8,15 +8,13 @@ import { WigglyWorm } from "./animation/WigglyWorm";
 import { initWebGPU } from "./initWebGPU";
 import { GPUContext, VscodeContext } from "./types";
 
-const ANIMATIONS = {
-  "cursor-trail": CursorTrail,
-  "wiggly-worm": WigglyWorm,
-  hyperspace: Hyperspace,
-} satisfies Record<string, typeof AnimationBase>;
+type AnimationState = {
+  animation: AnimationBase;
+  startedAt?: number;
+};
 
 export class AnimationController {
-  animation?: AnimationBase;
-  running = false;
+  animations: Record<string, AnimationState>;
 
   constructor(
     private gpu: GPUContext,
@@ -24,6 +22,17 @@ export class AnimationController {
     private config: AnimationConfiguration
   ) {
     this.setupEvents();
+    this.animations = {
+      hyperspace: {
+        animation: new Hyperspace(this.gpu, this.vscode, this.config),
+      },
+      "cursor-trail": {
+        animation: new CursorTrail(this.gpu, this.vscode, this.config),
+      },
+      "wiggly-worm": {
+        animation: new WigglyWorm(this.gpu, this.vscode, this.config),
+      },
+    };
   }
 
   static async run() {
@@ -35,49 +44,64 @@ export class AnimationController {
     const config = await vscode.bridge.waitForMessage("config-response");
     const gpu = await initWebGPU(vscode.editor.canvas);
     const controller = new AnimationController(gpu, vscode, config);
-    await controller.startAnimation("cursor-trail"); // TODO: move
+    await controller.onConfigChange();
+    controller.mainLoop();
   }
 
   setupEvents() {
     this.vscode.bridge.onMessage(async (m) => {
       if (m.type === "config-response") {
-        this.animation?.build();
         Object.assign(this.config, m.payload);
+        this.onConfigChange();
         console.log("New configuration", m.payload);
       } else if (m.type === "hyperspace") {
-        this.startAnimation("hyperspace", 7000, () => {
-          this.startAnimation("cursor-trail");
-        });
+        this.startAnimation("hyperspace");
+        setTimeout(() => {
+          this.stopAnimation("hyperspace");
+        }, 7000);
       }
     });
   }
 
-  async startAnimation(
-    name: keyof typeof ANIMATIONS,
-    durationMs?: number,
-    timeoutCallback?: () => void
-  ) {
-    const Animation = ANIMATIONS[name];
-    this.animation = new Animation(this.gpu, this.vscode, this.config);
-    await this.animation.build();
+  async onConfigChange() {
+    await this.startAnimation("cursor-trail");
+    if (this.config.wigglyWorm) {
+      await this.startAnimation("wiggly-worm");
+    } else {
+      this.stopAnimation("wiggly-worm");
+    }
+  }
 
-    const startTime = performance.now();
+  async startAnimation(name: string) {
+    const state = this.animations[name];
+    if (!state) {
+      throw new Error(`Animation ${name} not found`);
+    }
+    state.startedAt ??= performance.now();
+    await state.animation.build();
+  }
+
+  stopAnimation(name: string) {
+    const state = this.animations[name];
+    if (!state) {
+      throw new Error(`Animation ${name} not found`);
+    }
+    state.startedAt = undefined;
+  }
+
+  mainLoop() {
     const animate = (time: DOMHighResTimeStamp) => {
-      if (!this.running) {
-        return;
+      let clear = true;
+      for (const name in this.animations) {
+        const state = this.animations[name];
+        if (state.startedAt) {
+          state.animation.render(time - state.startedAt, clear);
+          clear = false;
+        }
       }
-      this.animation!.render(time - startTime);
       requestAnimationFrame(animate);
     };
 
-    this.running = true;
     requestAnimationFrame(animate);
-
-    if (durationMs) {
-      setTimeout(() => {
-        this.running = false;
-        timeoutCallback?.();
-      }, durationMs);
-    }
   }
 }

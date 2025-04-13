@@ -1,6 +1,10 @@
 import { AnimationConfiguration } from "../../../common/types";
 import { GPUContext, VscodeContext } from "../types";
 
+export type AnimationBaseSubclass = new (
+  ...args: ConstructorParameters<typeof AnimationBase>
+) => AnimationBase;
+
 export abstract class AnimationBase {
   constructor(
     protected gpu: GPUContext,
@@ -9,7 +13,7 @@ export abstract class AnimationBase {
   ) {}
 
   abstract build(): Promise<void>;
-  abstract render(time: number): void;
+  abstract render(time: number, clear: boolean): void;
 
   public clear() {
     const ctx = this.gpu.context.getCurrentTexture();

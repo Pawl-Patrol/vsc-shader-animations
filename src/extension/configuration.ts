@@ -6,12 +6,14 @@ export async function getConfig(): Promise<BridgeMessage> {
   const velocity = config.get<number>("velocity");
   const opacity = config.get<number>("opacity");
   const imageUrl = config.get<string>("backgroundImageUrl");
+  const wigglyWorm = config.get<boolean>("wigglyWorm");
   return {
     type: "config-response",
     payload: {
       opacity: opacity ? Number(opacity) : 0.5,
       velocityInPxsPerSecond: velocity ? Number(velocity) : 1.45,
       backgroundImageUrl: imageUrl ? await resolveImage(imageUrl) : undefined,
+      wigglyWorm: Boolean(wigglyWorm),
     },
   };
 }

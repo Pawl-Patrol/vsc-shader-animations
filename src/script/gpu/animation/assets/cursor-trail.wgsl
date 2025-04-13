@@ -68,7 +68,7 @@ fn fragment_main(@builtin(position) fragCoord: vec4<f32>) -> @location(0) vec4<f
     let d = sdPolygon(positions, fragCoord.xy / canvasRect.zw * 2.0 - 1.0);
     let uv = fragCoord.xy / canvasRect.zw;
     let textureColor = textureSample(text, samp, uv);
-    return vec4<f32>(textureColor.rgb, min(/*{opacity}*/, exp(- d * 100)));
+    return vec4<f32>(textureColor.rgb, min(/*{opacity}*/, exp(-d * 100)));
 }
 
 @vertex

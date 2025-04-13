@@ -34,8 +34,8 @@ export class WigglyWorm extends AnimationBase {
     const { x, y } = this.gpu.canvas.getBoundingClientRect();
     if (nextCursor) {
       this.cursor = {
-        x: nextCursor.left + nextCursor.width / 2 - x,
-        y: nextCursor.top + nextCursor.height / 2 - y,
+        x: nextCursor.right - x,
+        y: (nextCursor.top + nextCursor.bottom) / 2 - y,
       };
     }
   }

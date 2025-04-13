@@ -26,37 +26,6 @@ export function activate(context: vscode.ExtensionContext) {
     }
   });
 
-  let isHandlingSwitch = false;
-  let lastEditorUri: vscode.Uri;
-  vscode.window.onDidChangeActiveTextEditor(async (editor) => {
-    if (!editor || isHandlingSwitch) {
-      return;
-    }
-
-    const formUri = lastEditorUri;
-    const toUri = editor.document.uri;
-    lastEditorUri = toUri;
-
-    if (!formUri) {
-      return;
-    }
-
-    console.log("Switching editors", formUri.toString(), toUri.toString());
-
-    isHandlingSwitch = true;
-
-    if (toUri.toString() === formUri.toString()) {
-      const doc = await vscode.workspace.openTextDocument(formUri);
-      await vscode.window.showTextDocument(doc, { preview: false });
-      bridge.sendMessage({ type: "hyperspace", payload: {} });
-      setTimeout(async () => {
-        const doc = await vscode.workspace.openTextDocument(toUri);
-        await vscode.window.showTextDocument(doc, { preview: false });
-        isHandlingSwitch = false;
-      }, 3500);
-    }
-  });
-
   const disposable = vscode.commands.registerCommand(
     "vsc-cursor-animations.toggle",
     () => {
@@ -68,12 +37,32 @@ export function activate(context: vscode.ExtensionContext) {
 
   const disposable2 = vscode.commands.registerCommand(
     "vsc-cursor-animations.hyperspace",
-    () => {
+    async () => {
+      const file = await getRandomFile();
+      if (!file) {
+        return;
+      }
       bridge.sendMessage({ type: "hyperspace", payload: {} });
+      setTimeout(async () => {
+        const doc = await vscode.workspace.openTextDocument(file);
+        await vscode.window.showTextDocument(doc);
+      }, 3500);
     }
   );
 
   context.subscriptions.push(disposable, disposable2);
+}
+
+async function getRandomFile() {
+  const files = await vscode.workspace.findFiles(
+    "**/*.*",
+    "**/node_modules/**"
+  );
+  if (files.length === 0) {
+    return null;
+  }
+  const randomFile = files[Math.floor(Math.random() * files.length)];
+  return randomFile;
 }
 
 export function deactivate() {

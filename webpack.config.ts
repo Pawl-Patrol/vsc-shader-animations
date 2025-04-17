@@ -1,21 +1,15 @@
-//@ts-check
+import { resolve } from "path";
+import type { Configuration } from "webpack";
+import "webpack-dev-server";
 
-"use strict";
-
-const path = require("path");
-
-//@ts-check
-/** @typedef {import('webpack').Configuration} WebpackConfig **/
-
-/** @type WebpackConfig */
-const extensionConfig = {
+const extensionConfig: Configuration = {
   target: "node", // VS Code extensions run in a Node.js-context 📖 -> https://webpack.js.org/configuration/node/
   mode: "none", // this leaves the source code as close as possible to the original (when packaging we set this to 'production')
 
   entry: "./src/extension/main.ts", // the entry point of this extension, 📖 -> https://webpack.js.org/configuration/entry-context/
   output: {
     // the bundle is stored in the 'dist' folder (check package.json), 📖 -> https://webpack.js.org/configuration/output/
-    path: path.resolve(__dirname, "dist"),
+    path: resolve(__dirname, "dist"),
     filename: "extension.js",
     libraryTarget: "commonjs2",
   },
@@ -46,14 +40,13 @@ const extensionConfig = {
   },
 };
 
-/** @type WebpackConfig */
-const injectionScriptConfig = {
+const injectionScriptConfig: Configuration = {
   target: "web",
   mode: "development",
-  entry: "./src/script/main.ts", // your DOM script
+  entry: "./src/script/main.ts",
   output: {
-    path: path.resolve(__dirname, "dist"), // output folder, e.g., media for injection
-    filename: "script.bundle.js", // bundled script name
+    path: resolve(__dirname, "dist"),
+    filename: "script.bundle.js",
   },
   resolve: {
     extensions: [".ts", ".js"],
@@ -67,7 +60,7 @@ const injectionScriptConfig = {
           {
             loader: "ts-loader",
             options: {
-              configFile: path.resolve(__dirname, "tsconfig.script.json"),
+              configFile: resolve(__dirname, "tsconfig.script.json"),
             },
           },
         ],
@@ -82,7 +75,7 @@ const injectionScriptConfig = {
       },
     ],
   },
-  devtool: "source-map", // You can keep or remove this based on need
+  devtool: "source-map",
 };
 
-module.exports = [extensionConfig, injectionScriptConfig];
+export default [extensionConfig, injectionScriptConfig];

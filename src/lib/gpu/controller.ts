@@ -1,12 +1,9 @@
-import { AnimationConfiguration } from "../../common/types";
-import { Bridge } from "../vscode/bridge";
-import { Editor } from "../vscode/editor";
+import { AnimationConfiguration, VscodeContext } from "../../lib/types";
 import { AnimationBase } from "./animation/base";
 import { CursorTrail } from "./animation/CursorTrail";
 import { Hyperspace } from "./animation/Hyperspace";
 import { WigglyWorm } from "./animation/WigglyWorm";
-import { initWebGPU } from "./initWebGPU";
-import { GPUContext, VscodeContext } from "./types";
+import { getWebGPUContext, GPUContext } from "./context";
 
 type AnimationState = {
   animation: AnimationBase;
@@ -35,26 +32,25 @@ export class AnimationController {
     };
   }
 
-  static async run() {
-    const vscode = {
-      editor: await Editor.loopUntilEditorElementExists(),
-      bridge: await Bridge.waitUntilConnectionCanBeEstablished(),
-    };
-    vscode.bridge.sendMessage({ type: "config-request", payload: {} });
+  static async run(vscode: VscodeContext) {
+    const editorPromise = vscode.editor.connect();
+    await vscode.bridge.connect();
+    vscode.bridge.sendMessage("config-request", undefined);
     const config = await vscode.bridge.waitForMessage("config-response");
-    const gpu = await initWebGPU(vscode.editor.canvas);
+    await editorPromise;
+    const gpu = await getWebGPUContext(vscode.editor.canvas);
     const controller = new AnimationController(gpu, vscode, config);
     await controller.onConfigChange();
     controller.mainLoop();
   }
 
   setupEvents() {
-    this.vscode.bridge.onMessage(async (m) => {
-      if (m.type === "config-response") {
-        Object.assign(this.config, m.payload);
+    this.vscode.bridge.onMessage(async (type, message) => {
+      if (type === "config-response") {
+        Object.assign(this.config, message);
         this.onConfigChange();
-        console.log("New configuration", m.payload);
-      } else if (m.type === "hyperspace") {
+        console.log("New configuration", message);
+      } else if (type === "hyperspace") {
         this.startAnimation("hyperspace");
         setTimeout(() => {
           this.stopAnimation("hyperspace");

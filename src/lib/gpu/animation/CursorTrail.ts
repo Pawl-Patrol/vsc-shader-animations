@@ -32,8 +32,8 @@ export class CursorTrail extends AnimationBase {
   }
 
   render(time: number, clear: boolean) {
-    const nextCursor = this.update(time);
-    if (nextCursor) {
+    this.update(time);
+    if (this.source && this.target) {
       this.draw(clear);
     } else {
       this.clear();
@@ -46,22 +46,23 @@ export class CursorTrail extends AnimationBase {
 
     const nextCursor = this.vscode.editor.findSuitableCursorRect();
 
-    if (nextCursor && !rect.equal(this.target, nextCursor)) {
+    if (nextCursor) {
       if (this.source) {
         this.source = rect.lerp(this.progress, this.source, this.target!);
       } else {
         this.source = this.target;
       }
 
-      this.target = nextCursor;
-
-      if (this.source) {
-        this.duration =
-          rect.distance(this.source, this.target) /
-          this.config.velocityInPxsPerSecond;
-        this.progress = 0;
-      } else {
-        this.progress = 1;
+      if (!rect.equal(this.target, nextCursor)) {
+        this.target = nextCursor;
+        if (this.source) {
+          this.duration =
+            rect.distance(this.source, this.target) /
+            this.config.velocityInPxsPerSecond;
+          this.progress = 0;
+        } else {
+          this.progress = 1;
+        }
       }
     }
 
@@ -71,8 +72,6 @@ export class CursorTrail extends AnimationBase {
         this.progress = 1;
       }
     }
-
-    return nextCursor;
   }
 
   private draw(clear: boolean) {

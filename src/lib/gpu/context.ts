@@ -1,6 +1,4 @@
-import { GPUContext } from "./types";
-
-export async function initWebGPU(canvas: HTMLCanvasElement) {
+export async function getWebGPUContext(canvas: HTMLCanvasElement) {
   if (!navigator.gpu) {
     throw new Error("WebGPU not supported");
   }
@@ -22,5 +20,7 @@ export async function initWebGPU(canvas: HTMLCanvasElement) {
   const format = navigator.gpu.getPreferredCanvasFormat();
   context.configure({ device, format, alphaMode: "premultiplied" });
 
-  return { device, canvas, context, format } satisfies GPUContext;
+  return { device, canvas, context, format };
 }
+
+export type GPUContext = Awaited<ReturnType<typeof getWebGPUContext>>;

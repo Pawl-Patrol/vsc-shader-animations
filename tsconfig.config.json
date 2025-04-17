@@ -1,0 +1,9 @@
+{
+  "include": ["./webpack.config.ts"],
+  "compilerOptions": {
+    "module": "CommonJS",
+    "strict": true,
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true
+  }
+}

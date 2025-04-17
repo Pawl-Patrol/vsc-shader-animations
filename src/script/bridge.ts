@@ -1,30 +1,44 @@
-import { WEBSOCKET_PORT } from "../../common/common";
-import { BridgeMessage } from "../../common/types";
-import { deferrable } from "../utils/defer";
+import { WEBSOCKET_PORT } from "../lib/common";
+import { BridgeMessage, BridgeMessageType, IBridge } from "../lib/types";
+import { deferrable } from "../lib/utils/defer";
 
-export class Bridge {
-  private constructor(private socket: WebSocket) {}
+export class Bridge implements IBridge {
+  private _socket?: WebSocket;
 
-  static async waitUntilConnectionCanBeEstablished() {
-    const socket = await new Promise<WebSocket>((resolve, reject) =>
+  private get socket() {
+    if (!this._socket) {
+      throw new Error("Socket not connected");
+    }
+    return this._socket;
+  }
+
+  async connect() {
+    this._socket = await new Promise<WebSocket>((resolve, reject) =>
       tryConnect(resolve, reject)
     );
-    return new Bridge(socket);
   }
 
-  async sendMessage(message: BridgeMessage) {
-    this.socket.send(JSON.stringify(message));
+  async sendMessage<T extends BridgeMessageType>(
+    type: T,
+    payload: BridgeMessage<T>
+  ) {
+    this.socket.send(JSON.stringify({ type, payload }));
   }
 
-  async onMessage(callback: (message: BridgeMessage) => void) {
+  async onMessage(
+    callback: <T extends BridgeMessageType>(
+      type: T,
+      message: BridgeMessage<T>
+    ) => void
+  ) {
     this.socket.addEventListener("message", (event) => {
       const data = JSON.parse(event.data);
-      callback(data);
+      callback(data.type, data.payload);
     });
   }
 
-  async waitForMessage<T extends BridgeMessage["type"]>(type: T) {
-    const deferred = deferrable<(BridgeMessage & { type: T })["payload"]>();
+  async waitForMessage<T extends BridgeMessageType>(type: T) {
+    const deferred = deferrable<BridgeMessage<T>>();
     const callback = (event: MessageEvent) => {
       const data = JSON.parse(event.data);
       if (data.type === type) {

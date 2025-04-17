@@ -1,5 +1,5 @@
-import { AnimationConfiguration } from "../../../common/types";
-import { GPUContext, VscodeContext } from "../types";
+import { AnimationConfiguration, VscodeContext } from "../../../lib/types";
+import { GPUContext } from "../context";
 
 export type AnimationBaseSubclass = new (
   ...args: ConstructorParameters<typeof AnimationBase>

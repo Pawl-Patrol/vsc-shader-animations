@@ -1,0 +1,5 @@
+- testing environment
+- better reloading
+- configurable smoke
+- better bridge communication
+- add project structure to readme

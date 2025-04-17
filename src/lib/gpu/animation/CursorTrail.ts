@@ -3,7 +3,6 @@ import { loadImage } from "../loadImage";
 import shaderCode from "./assets/cursor-trail.wgsl";
 import gradientUrl from "./assets/gradient.jpg";
 import { AnimationBase } from "./base";
-import { blendState } from "./blendstate";
 import { loadShader } from "./loadShader";
 
 export type CursorTrailBuffers = {
@@ -272,7 +271,18 @@ export class CursorTrail extends AnimationBase {
         targets: [
           {
             format: this.gpu.format,
-            blend: blendState,
+            blend: {
+              color: {
+                srcFactor: "one",
+                dstFactor: "one",
+                operation: "add",
+              },
+              alpha: {
+                srcFactor: "one",
+                dstFactor: "one",
+                operation: "add",
+              },
+            },
           },
         ],
       },

@@ -14,10 +14,19 @@ export class Patcher {
   async toggle(scriptFile: string) {
     if (fs.existsSync(this.backupFile)) {
       await this.restoreBackup();
+      this.needsRestart("Cursor Animations is disabled.");
     } else {
       await this.patchHtmlFile(scriptFile);
+      this.needsRestart("Cursor Animations is enabled.");
     }
-    this.needsRestart();
+  }
+
+  async reload(scriptFile: string) {
+    if (fs.existsSync(this.backupFile)) {
+      await this.restoreBackup();
+    }
+    await this.patchHtmlFile(scriptFile);
+    this.needsRestart("Cursor Animations is reloaded.");
   }
 
   private async patchHtmlFile(scriptFile: string) {
@@ -60,14 +69,12 @@ export class Patcher {
     }
   }
 
-  private needsRestart() {
-    vscode.window
-      .showInformationMessage("Restart your IDE to apply changes", "Restart")
-      .then((btn) => {
-        if (btn === "Restart") {
-          vscode.commands.executeCommand("workbench.action.reloadWindow");
-        }
-      });
+  private needsRestart(msg: string) {
+    vscode.window.showInformationMessage(msg, "Restart").then((btn) => {
+      if (btn === "Restart") {
+        vscode.commands.executeCommand("workbench.action.reloadWindow");
+      }
+    });
   }
 }
 

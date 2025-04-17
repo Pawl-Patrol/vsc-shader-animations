@@ -20,14 +20,14 @@ export class AnimationController {
   ) {
     this.setupEvents();
     this.animations = {
-      hyperspace: {
-        animation: new Hyperspace(this.gpu, this.vscode, this.config),
-      },
       "cursor-trail": {
         animation: new CursorTrail(this.gpu, this.vscode, this.config),
       },
       "wiggly-worm": {
         animation: new WigglyWorm(this.gpu, this.vscode, this.config),
+      },
+      hyperspace: {
+        animation: new Hyperspace(this.gpu, this.vscode, this.config),
       },
     };
   }
@@ -42,6 +42,7 @@ export class AnimationController {
     const controller = new AnimationController(gpu, vscode, config);
     await controller.onConfigChange();
     controller.mainLoop();
+    controller.startAnimation("hyperspace");
   }
 
   setupEvents() {

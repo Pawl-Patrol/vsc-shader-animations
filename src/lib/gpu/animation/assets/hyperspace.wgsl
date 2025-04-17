@@ -77,10 +77,10 @@ fn exit(t: f32, p: vec2<f32>) -> vec4<f32> {
         let threshold = mix(0.12, 0.0, smoothstep(0.5, 0.8, t));
         var h_weight = 0.85 * smoothstep(threshold, 0.0, abs(h));
 
-        color = max(color, vec4<f32>(trail_color * fade * h_weight, 0.01));
+        color = max(color, vec4<f32>(trail_color * fade * h_weight, fade * h_weight));
     }
 
-    return color + mix(1.0, 0.0, smoothstep(0.0, 0.2, t));
+    return color + mix(1.0, 0.0, smoothstep(0.0, T_JUMP, t));
 }
 
 fn entry(t: f32, p: vec2<f32>) -> vec4<f32> {
@@ -130,10 +130,10 @@ fn entry(t: f32, p: vec2<f32>) -> vec4<f32> {
         let threshold = 0.08; // mix(0.12, 0.0, smoothstep(0.5, 0.8, t));
         var h_weight = 0.85 * smoothstep(threshold, 0.0, abs(h));
 
-        color = max(color, vec4<f32>(trail_color * fade * h_weight, 0.01));
+        color = max(color, vec4<f32>(trail_color * fade * h_weight, fade * h_weight));
     }
 
-    return color + mix(0.0, 1.0, smoothstep(T_JUMP - 0.0, 1.0, t));
+    return color + mix(0.0, 1.0, smoothstep(T_JUMP, 1.0, t));
 }
 
 @fragment

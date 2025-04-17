@@ -7,12 +7,13 @@ import { Patcher } from "./patch";
 const patcher = new Patcher();
 let bridge: Bridge;
 
-export function activate(context: vscode.ExtensionContext) {
+export async function activate(context: vscode.ExtensionContext) {
   console.log(
     'Congratulations, your extension "vsc-cursor-animations" is now active!'
   );
 
   bridge = new Bridge();
+  await bridge.connect();
 
   bridge.onMessage(async (type, payload, reply) => {
     if (type === "config-request") {
@@ -26,16 +27,21 @@ export function activate(context: vscode.ExtensionContext) {
     }
   });
 
+  const scriptFile = context.asAbsolutePath(
+    path.join("dist", "script.bundle.js")
+  );
+
   const disposable = vscode.commands.registerCommand(
     "vsc-cursor-animations.toggle",
-    () => {
-      patcher.toggle(
-        context.asAbsolutePath(path.join("dist", "script.bundle.js"))
-      );
-    }
+    () => patcher.toggle(scriptFile)
   );
 
   const disposable2 = vscode.commands.registerCommand(
+    "vsc-cursor-animations.reload",
+    () => patcher.reload(scriptFile)
+  );
+
+  const disposable3 = vscode.commands.registerCommand(
     "vsc-cursor-animations.hyperspace",
     async () => {
       const file = await getRandomFile();
@@ -50,7 +56,7 @@ export function activate(context: vscode.ExtensionContext) {
     }
   );
 
-  context.subscriptions.push(disposable, disposable2);
+  context.subscriptions.push(disposable, disposable2, disposable3);
 }
 
 async function getRandomFile() {

@@ -1,6 +1,5 @@
 import shaderCode from "./assets/hyperspace.wgsl";
 import { AnimationBase } from "./base";
-import { blendState } from "./blendstate";
 import { loadShader } from "./loadShader";
 
 export type HyperspaceBuffers = {
@@ -112,7 +111,18 @@ export class Hyperspace extends AnimationBase {
         targets: [
           {
             format: this.gpu.format,
-            blend: blendState,
+            blend: {
+              color: {
+                srcFactor: "src-alpha",
+                dstFactor: "one-minus-src-alpha",
+                operation: "add",
+              },
+              alpha: {
+                srcFactor: "one",
+                dstFactor: "one-minus-src-alpha",
+                operation: "add",
+              },
+            },
           },
         ],
       },

@@ -61,8 +61,7 @@ export class Bridge implements IBridge {
 function tryConnect(
   resolve: (socket: WebSocket) => void,
   reject: () => void,
-  attempts = 10,
-  delayMs = 500
+  attempt = 0
 ) {
   console.log("Attempting to connect to WebSocket server...");
   const socket = new WebSocket(`ws://localhost:${WEBSOCKET_PORT}`);
@@ -74,10 +73,13 @@ function tryConnect(
 
   socket.onerror = () => {
     console.error("WebSocket connection error.");
-    if (attempts > 0) {
-      setTimeout(() => tryConnect(resolve, reject, attempts - 1), delayMs);
-    } else {
+    if (attempt > 5) {
       reject();
+    } else {
+      setTimeout(
+        () => tryConnect(resolve, reject, attempt + 1),
+        2 ** attempt * 1000
+      );
     }
   };
 }

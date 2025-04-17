@@ -29,7 +29,7 @@ export class Bridge implements IBridge {
       velocityInPxsPerSecond: 0.65,
       wigglyWorm: true,
       shaderOptions: {
-        cursorTrailOpacity: 0.65,
+        cursorTrailOpacity: 0.7,
       },
     } as AnimationConfiguration as BridgeMessage<T>;
   }

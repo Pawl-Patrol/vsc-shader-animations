@@ -42,7 +42,6 @@ export class AnimationController {
     const controller = new AnimationController(gpu, vscode, config);
     await controller.onConfigChange();
     controller.mainLoop();
-    controller.startAnimation("hyperspace");
   }
 
   setupEvents() {

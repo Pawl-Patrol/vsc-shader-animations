@@ -1,4 +1,9 @@
-import { BridgeMessage, BridgeMessageType, IBridge } from "../lib/types";
+import {
+  AnimationConfiguration,
+  BridgeMessage,
+  BridgeMessageType,
+  IBridge,
+} from "../lib/types";
 
 export class Bridge implements IBridge {
   async connect() {}
@@ -11,15 +16,21 @@ export class Bridge implements IBridge {
   async onMessage(
     callback: <T extends BridgeMessageType>(
       type: T,
-      message: BridgeMessage<T>
+      message: BridgeMessage<T>,
+      reply: <U extends BridgeMessageType>(
+        type: U,
+        payload: BridgeMessage<U>
+      ) => void
     ) => void
   ) {}
 
   async waitForMessage<T extends BridgeMessageType>(type: T) {
     return {
-      opacity: 0.5,
       velocityInPxsPerSecond: 0.65,
-      wigglyWorm: false,
-    } as BridgeMessage<T>;
+      wigglyWorm: true,
+      shaderOptions: {
+        cursorTrailOpacity: 0.65,
+      },
+    } as AnimationConfiguration as BridgeMessage<T>;
   }
 }

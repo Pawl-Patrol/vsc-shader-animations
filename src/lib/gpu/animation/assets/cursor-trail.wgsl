@@ -120,7 +120,7 @@ fn smoke_blend(uv: vec2<f32>, tex_color: vec3<f32>, opacity: f32) -> vec4<f32> {
 
     color = mix(color, tex_color, 0.9);
 
-    return vec4<f32>((f * f * f + 0.6 * f * f + 0.5 * f + 0.5) * color, max(opacity, 0.05));
+    return vec4<f32>((f * f * f + 0.6 * f * f + 0.5 * f + 0.5) * color, max(opacity, 0.15));
 }
 
 @fragment
@@ -152,7 +152,8 @@ fn fragment_main(@builtin(position) fragCoord: vec4<f32>) -> @location(0) vec4<f
     let uv = fragCoord.xy / canvasRect.zw;
     let textureColor = textureSample(text, samp, uv);
 
-    return smoke_blend(uv, textureColor.rgb, min(/*{opacity}*/, exp(-d * 100)));
+    let alpha = min(${cursorTrailOpacity}, exp(-d * 100));
+    return vec4f(textureColor.rgb * alpha, alpha);
 }
 
 @vertex

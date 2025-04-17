@@ -1,5 +1,7 @@
 import shaderCode from "./assets/hyperspace.wgsl";
 import { AnimationBase } from "./base";
+import { blendState } from "./blendstate";
+import { loadShader } from "./loadShader";
 
 export type HyperspaceBuffers = {
   uniformBuffer: GPUBuffer;
@@ -94,9 +96,7 @@ export class Hyperspace extends AnimationBase {
   }
 
   private async createPipeline() {
-    const shaderModule = this.gpu.device.createShaderModule({
-      code: shaderCode,
-    });
+    const shaderModule = loadShader(this.gpu.device, shaderCode, this.config);
 
     this.pipeline = this.gpu.device.createRenderPipeline({
       layout: this.gpu.device.createPipelineLayout({
@@ -112,19 +112,7 @@ export class Hyperspace extends AnimationBase {
         targets: [
           {
             format: this.gpu.format,
-            blend: {
-              color: {
-                srcFactor: "one",
-                dstFactor: "one-minus-src-alpha",
-                operation: "add",
-              },
-              alpha: {
-                srcFactor: "one",
-                dstFactor: "one-minus-src-alpha",
-                operation: "add",
-              },
-            },
-            writeMask: GPUColorWrite.ALL,
+            blend: blendState,
           },
         ],
       },

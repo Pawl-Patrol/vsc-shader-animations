@@ -14,15 +14,15 @@ export function activate(context: vscode.ExtensionContext) {
 
   bridge = new Bridge();
 
-  bridge.onMessage(async (m, reply) => {
-    if (m.type === "config-request") {
-      reply(await getConfig());
+  bridge.onMessage(async (type, payload, reply) => {
+    if (type === "config-request") {
+      reply("config-response", await getConfig());
     }
   });
 
   vscode.workspace.onDidChangeConfiguration(async (event) => {
     if (event.affectsConfiguration("vsc-cursor-animations")) {
-      bridge.sendMessage(await getConfig());
+      bridge.sendMessage("config-response", await getConfig());
     }
   });
 
@@ -42,7 +42,7 @@ export function activate(context: vscode.ExtensionContext) {
       if (!file) {
         return;
       }
-      bridge.sendMessage({ type: "hyperspace", payload: {} });
+      bridge.sendMessage("hyperspace", undefined);
       setTimeout(async () => {
         const doc = await vscode.workspace.openTextDocument(file);
         await vscode.window.showTextDocument(doc);

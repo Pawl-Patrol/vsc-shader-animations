@@ -17,6 +17,7 @@ export default {
     },
     compress: true,
     port: 9000,
+    open: true,
   },
   resolve: {
     extensions: [".ts", ".js"],

@@ -3,15 +3,19 @@ export interface IBridge {
 
   sendMessage<T extends BridgeMessageType>(
     type: T,
-    message: BridgeMessage<T>
+    payload: BridgeMessage<T>
   ): void;
 
   onMessage(
     callback: <T extends BridgeMessageType>(
       type: T,
-      message: BridgeMessage<T>
+      payload: BridgeMessage<T>,
+      reply: <U extends BridgeMessageType>(
+        type: U,
+        message: BridgeMessage<U>
+      ) => void
     ) => void
-  ): Promise<void>;
+  ): void;
 
   waitForMessage<T extends BridgeMessageType>(
     type: T
@@ -30,10 +34,12 @@ export type VscodeContext = {
 };
 
 export type AnimationConfiguration = {
-  opacity: number;
   velocityInPxsPerSecond: number;
   backgroundImageUrl?: string;
   wigglyWorm: boolean;
+  shaderOptions: {
+    cursorTrailOpacity: number;
+  };
 };
 
 type BridgeMessages = {

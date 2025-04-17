@@ -3,6 +3,8 @@ import { loadImage } from "../loadImage";
 import shaderCode from "./assets/cursor-trail.wgsl";
 import gradientUrl from "./assets/gradient.jpg";
 import { AnimationBase } from "./base";
+import { blendState } from "./blendstate";
+import { loadShader } from "./loadShader";
 
 export type CursorTrailBuffers = {
   timeBuffer: GPUBuffer;
@@ -254,9 +256,7 @@ export class CursorTrail extends AnimationBase {
   }
 
   private async createPipeline() {
-    const shaderModule = this.gpu.device.createShaderModule({
-      code: shaderCode.replace("/*{opacity}*/", this.config.opacity.toFixed(2)),
-    });
+    const shaderModule = loadShader(this.gpu.device, shaderCode, this.config);
 
     this.pipeline = this.gpu.device.createRenderPipeline({
       layout: this.gpu.device.createPipelineLayout({
@@ -272,18 +272,7 @@ export class CursorTrail extends AnimationBase {
         targets: [
           {
             format: this.gpu.format,
-            blend: {
-              color: {
-                srcFactor: "src-alpha",
-                dstFactor: "one-minus-src-alpha",
-                operation: "add",
-              },
-              alpha: {
-                srcFactor: "one",
-                dstFactor: "one-minus-src-alpha",
-                operation: "add",
-              },
-            },
+            blend: blendState,
           },
         ],
       },

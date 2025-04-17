@@ -1,5 +1,7 @@
 import shaderCode from "./assets/wiggly-worm.wgsl";
 import { AnimationBase } from "./base";
+import { blendState } from "./blendstate";
+import { loadShader } from "./loadShader";
 
 export type WigglyWormBuffers = {
   uniformBuffer: GPUBuffer;
@@ -110,14 +112,14 @@ export class WigglyWorm extends AnimationBase {
         usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
       }),
       pointsInputBuffer: this.gpu.device.createBuffer({
-        size: 2048,
+        size: 1024,
         usage:
           GPUBufferUsage.STORAGE |
           GPUBufferUsage.COPY_SRC |
           GPUBufferUsage.COPY_DST,
       }),
       pointsOutputBuffer: this.gpu.device.createBuffer({
-        size: 2048,
+        size: 1024,
         usage:
           GPUBufferUsage.STORAGE |
           GPUBufferUsage.COPY_SRC |
@@ -177,9 +179,7 @@ export class WigglyWorm extends AnimationBase {
   }
 
   private async createPipelines() {
-    const shaderModule = this.gpu.device.createShaderModule({
-      code: shaderCode,
-    });
+    const shaderModule = loadShader(this.gpu.device, shaderCode, this.config);
 
     const pipelineLayout = this.gpu.device.createPipelineLayout({
       bindGroupLayouts: [this.bindGroupLayout!],
@@ -205,19 +205,7 @@ export class WigglyWorm extends AnimationBase {
         targets: [
           {
             format: this.gpu.format,
-            blend: {
-              color: {
-                srcFactor: "one",
-                dstFactor: "one-minus-src-alpha",
-                operation: "add",
-              },
-              alpha: {
-                srcFactor: "one",
-                dstFactor: "one-minus-src-alpha",
-                operation: "add",
-              },
-            },
-            writeMask: GPUColorWrite.ALL,
+            blend: blendState,
           },
         ],
       },

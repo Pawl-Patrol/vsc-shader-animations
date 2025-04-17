@@ -6,10 +6,10 @@ struct Uniforms {
 }
 
 @group(0) @binding(0) var<uniform> uniforms: Uniforms;
-@group(0) @binding(1) var<storage, read> pointsInput: array<vec2f, 256>;
-@group(0) @binding(2) var<storage, read_write> pointsOutput: array<vec2f, 256>;
+@group(0) @binding(1) var<storage, read> pointsInput: array<vec2f, 128>;
+@group(0) @binding(2) var<storage, read_write> pointsOutput: array<vec2f, 128>;
 
-const num_points = 256;
+const num_points = 128;
 const num_bins = 64;
 const window_length: i32 = 8;
 const window_offset: f32 = 4.2;
@@ -128,12 +128,13 @@ fn image_fragment_main(@builtin(position) fragCoord: vec4f) -> @location(0) vec4
                 var trail = 2.0 / line(fragCoord.xy, p0, p1);
                 let fade = 1.0 - smoothstep(0.75 * f32(num_points), f32(num_points), f32(j));
                 trail = max(0.0, trail - 0.1);
-                fragColor = max(fragColor, vec4f(trail * fade * palette(j), 0.01));
                 p0 = p1;
                 p1 = p2;
                 p2 = p3;
+                fragColor = max(fragColor, vec4f(palette(j) * trail * fade, trail * fade));
             }
         }
     }
+
     return fragColor;
 }

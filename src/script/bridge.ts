@@ -25,15 +25,21 @@ export class Bridge implements IBridge {
     this.socket.send(JSON.stringify({ type, payload }));
   }
 
-  async onMessage(
+  onMessage(
     callback: <T extends BridgeMessageType>(
       type: T,
-      message: BridgeMessage<T>
+      message: BridgeMessage<T>,
+      reply: <U extends BridgeMessageType>(
+        type: U,
+        payload: BridgeMessage<U>
+      ) => void
     ) => void
   ) {
     this.socket.addEventListener("message", (event) => {
       const data = JSON.parse(event.data);
-      callback(data.type, data.payload);
+      callback(data.type, data.payload, (type, payload) => {
+        this.socket.send(JSON.stringify({ type, payload }));
+      });
     });
   }
 

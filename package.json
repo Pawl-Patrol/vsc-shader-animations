@@ -1,7 +1,7 @@
 {
   "name": "vsc-cursor-animations",
-  "displayName": "vsc-cursor-animations",
-  "description": "Fancy cursor animations for vscode",
+  "displayName": "Vscode Shader Animations",
+  "description": "Fancy animations for vscode",
   "version": "1.0.0",
   "engines": {
     "vscode": "^1.99.0"
@@ -74,7 +74,7 @@
             "maximum": 100,
             "description": "Strength of the glowing effect. 0 = no glow, 100 = max glow."
           },
-          "vsc-cursor-animations.cursor-trail.backgroundImageUrl": {
+          "vsc-cursor-animations.cursor-trail.background-image-url": {
             "type": "string",
             "description": "Background image url for the selections"
           }

@@ -6,10 +6,12 @@ export async function getConfig(): Promise<AnimationConfiguration> {
   return {
     animations: config.get<AnimationName[]>("animations", []),
     cursorTrail: {
-      velocity: config.get<number>("cursorTrail.velocity", 0.5),
-      opacity: config.get<number>("cursorTrail.opacity", 0.5),
-      backgroundImageUrl: config.get<string>("cursorTrail.backgroundImageUrl"),
-      bloom: config.get<number>("cursorTrail.bloom", 1),
+      velocity: config.get<number>("cursor-trail.velocity", 0.5),
+      opacity: config.get<number>("cursor-trail.opacity", 0.5),
+      backgroundImageUrl: config.get<string>(
+        "cursor-trail.background-image-url"
+      ),
+      bloom: config.get<number>("cursor-trail.bloom", 1),
     },
     smoke: {
       opacity: config.get<number>("smoke.opacity", 0.5),

@@ -8,10 +8,6 @@ const patcher = new Patcher();
 let bridge: Bridge;
 
 export async function activate(context: vscode.ExtensionContext) {
-  console.log(
-    'Congratulations, your extension "vsc-cursor-animations" is now active!'
-  );
-
   bridge = new Bridge();
   await bridge.connect();
 

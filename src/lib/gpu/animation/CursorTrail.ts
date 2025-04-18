@@ -210,7 +210,7 @@ export class CursorTrail extends AnimationBase {
   private async createBindGroup() {
     const texture = await loadImage(
       this.gpu.device,
-      this.config.cursorTrail.backgroundImageUrl ?? gradientUrl
+      this.config.cursorTrail.backgroundImageUrl || gradientUrl
     );
 
     const sampler = this.gpu.device.createSampler({

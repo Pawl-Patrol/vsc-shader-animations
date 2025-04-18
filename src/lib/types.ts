@@ -41,7 +41,7 @@ export const ANIMATION_NAMES = [
 export type AnimationName = (typeof ANIMATION_NAMES)[number];
 export type AnimationConfiguration = {
   animations: AnimationName[];
-  cursorTrail: {
+  cursorTransition: {
     velocity: number;
     opacity: number;
     bloom: number;

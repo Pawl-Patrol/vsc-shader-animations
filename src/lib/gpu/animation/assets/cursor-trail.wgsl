@@ -69,7 +69,7 @@ fn fragment_main(@builtin(position) fragCoord: vec4<f32>) -> @location(0) vec4<f
     let uv = fragCoord.xy / canvasRect.zw;
     let textureColor = textureSample(text, samp, uv);
 
-    let alpha = min(${config.cursorTrail.opacity}, exp(-d * 100 / ${config.cursorTrail.bloom}) * textureColor.a);
+    let alpha = min(${config.cursorTransition.opacity}, exp(-d * 100 / ${config.cursorTransition.bloom}) * textureColor.a);
     return vec4f(textureColor.rgb * alpha, alpha);
 }
 

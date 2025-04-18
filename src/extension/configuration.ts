@@ -5,13 +5,13 @@ export async function getConfig(): Promise<AnimationConfiguration> {
   const config = vscode.workspace.getConfiguration("vsc-shader-animations");
   return {
     animations: config.get<AnimationName[]>("animations", []),
-    cursorTrail: {
-      velocity: config.get<number>("cursor-trail.velocity", 0.5),
-      opacity: config.get<number>("cursor-trail.opacity", 0.5),
+    cursorTransition: {
+      velocity: config.get<number>("cursor-transition.velocity", 0.5),
+      opacity: config.get<number>("cursor-transition.opacity", 0.5),
       backgroundImageUrl: config.get<string>(
-        "cursor-trail.background-image-url"
+        "cursor-transition.background-image-url"
       ),
-      bloom: config.get<number>("cursor-trail.bloom", 1),
+      bloom: config.get<number>("cursor-transition.bloom", 1),
     },
     smoke: {
       opacity: config.get<number>("smoke.opacity", 0.5),

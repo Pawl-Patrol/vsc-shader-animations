@@ -59,7 +59,7 @@ export class CursorTransition extends AnimationBase {
         if (this.source) {
           this.duration =
             rect.distance(this.source, this.target) /
-            this.config.cursorTrail.velocity;
+            this.config.cursorTransition.velocity;
           this.progress = 0;
         } else {
           this.progress = 1;
@@ -210,7 +210,7 @@ export class CursorTransition extends AnimationBase {
   private async createBindGroup() {
     const texture = await loadImage(
       this.gpu.device,
-      this.config.cursorTrail.backgroundImageUrl || gradientUrl
+      this.config.cursorTransition.backgroundImageUrl || gradientUrl
     );
 
     const sampler = this.gpu.device.createSampler({

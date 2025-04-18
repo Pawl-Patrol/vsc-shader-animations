@@ -52,29 +52,29 @@
         }
       },
       {
-        "title": "Cursor Trail",
+        "title": "Cursor Transition",
         "properties": {
-          "vsc-shader-animations.cursor-trail.velocity": {
+          "vsc-shader-animations.cursor-transition.velocity": {
             "type": "number",
             "default": 1.45,
             "minimum": 0,
             "description": "Velocity of cursor in pixels per second"
           },
-          "vsc-shader-animations.cursor-trail.opacity": {
+          "vsc-shader-animations.cursor-transition.opacity": {
             "type": "number",
             "default": 0.65,
             "minimum": 0,
             "maximum": 1,
             "description": "Opacity of selection area"
           },
-          "vsc-shader-animations.cursor-trail.bloom": {
+          "vsc-shader-animations.cursor-transition.bloom": {
             "type": "number",
             "default": 2,
             "minimum": 0,
             "maximum": 100,
             "description": "Strength of the glowing effect. 0 = no glow, 100 = max glow."
           },
-          "vsc-shader-animations.cursor-trail.background-image-url": {
+          "vsc-shader-animations.cursor-transition.background-image-url": {
             "type": "string",
             "description": "Background image url for the selections"
           }

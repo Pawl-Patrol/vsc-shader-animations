@@ -18,7 +18,7 @@ export async function activate(context: vscode.ExtensionContext) {
   });
 
   vscode.workspace.onDidChangeConfiguration(async (event) => {
-    if (event.affectsConfiguration("vsc-cursor-animations")) {
+    if (event.affectsConfiguration("vsc-shader-animations")) {
       bridge.sendMessage("config-response", await getConfig());
     }
   });
@@ -28,17 +28,17 @@ export async function activate(context: vscode.ExtensionContext) {
   );
 
   const disposable = vscode.commands.registerCommand(
-    "vsc-cursor-animations.toggle",
+    "vsc-shader-animations.toggle",
     () => patcher.toggle(scriptFile)
   );
 
   const disposable2 = vscode.commands.registerCommand(
-    "vsc-cursor-animations.reload",
+    "vsc-shader-animations.reload",
     () => patcher.reload(scriptFile)
   );
 
   const disposable3 = vscode.commands.registerCommand(
-    "vsc-cursor-animations.hyperspace",
+    "vsc-shader-animations.hyperspace",
     async () => {
       const file = await getRandomFile();
       if (!file) {

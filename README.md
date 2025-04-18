@@ -45,9 +45,9 @@ This extension modifies the vscode files directly. Use at your own risk. May bre
 
 Currently the following options are available to control the animations:
 
-- `vsc-cursor-animations.velocity`: The speed of the animation in pixels per second. Default is `1.45`.
-- `vsc-cursor-animations.opacity`: Opacity of the overlay. Default is `0.65`.
-- `vsc-cursor-animations.backgroundImageUrl`: URL of a background image, which will be used as the background of the overlay. Default is `null`.
+- `vsc-shader-animations.velocity`: The speed of the animation in pixels per second. Default is `1.45`.
+- `vsc-shader-animations.opacity`: Opacity of the overlay. Default is `0.65`.
+- `vsc-shader-animations.backgroundImageUrl`: URL of a background image, which will be used as the background of the overlay. Default is `null`.
 
 ## 🛠️ How it works
 

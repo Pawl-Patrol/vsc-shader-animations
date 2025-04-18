@@ -1,5 +1,5 @@
 {
-  "name": "vsc-cursor-animations",
+  "name": "vsc-shader-animations",
   "displayName": "Vscode Shader Animations",
   "description": "Fancy animations for vscode",
   "version": "1.0.0",
@@ -14,7 +14,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/Pawl-Patrol/vsc-cursor-animations.git"
+    "url": "https://github.com/Pawl-Patrol/vsc-shader-animations.git"
   },
   "main": "./dist/extension.js",
   "contributes": {
@@ -22,7 +22,7 @@
       {
         "title": "Animations",
         "properties": {
-          "vsc-cursor-animations.animations": {
+          "vsc-shader-animations.animations": {
             "type": "array",
             "items": {
               "type": "string",
@@ -42,7 +42,7 @@
       {
         "title": "Smoke",
         "properties": {
-          "vsc-cursor-animations.smoke.opacity": {
+          "vsc-shader-animations.smoke.opacity": {
             "type": "number",
             "default": 0.65,
             "minimum": 0,
@@ -54,27 +54,27 @@
       {
         "title": "Cursor Trail",
         "properties": {
-          "vsc-cursor-animations.cursor-trail.velocity": {
+          "vsc-shader-animations.cursor-trail.velocity": {
             "type": "number",
             "default": 1.45,
             "minimum": 0,
             "description": "Velocity of cursor in pixels per second"
           },
-          "vsc-cursor-animations.cursor-trail.opacity": {
+          "vsc-shader-animations.cursor-trail.opacity": {
             "type": "number",
             "default": 0.65,
             "minimum": 0,
             "maximum": 1,
             "description": "Opacity of selection area"
           },
-          "vsc-cursor-animations.cursor-trail.bloom": {
+          "vsc-shader-animations.cursor-trail.bloom": {
             "type": "number",
             "default": 2,
             "minimum": 0,
             "maximum": 100,
             "description": "Strength of the glowing effect. 0 = no glow, 100 = max glow."
           },
-          "vsc-cursor-animations.cursor-trail.background-image-url": {
+          "vsc-shader-animations.cursor-trail.background-image-url": {
             "type": "string",
             "description": "Background image url for the selections"
           }
@@ -83,15 +83,15 @@
     ],
     "commands": [
       {
-        "command": "vsc-cursor-animations.toggle",
+        "command": "vsc-shader-animations.toggle",
         "title": "Toggle Cursor Animations"
       },
       {
-        "command": "vsc-cursor-animations.reload",
+        "command": "vsc-shader-animations.reload",
         "title": "Reload Cursor Animations"
       },
       {
-        "command": "vsc-cursor-animations.hyperspace",
+        "command": "vsc-shader-animations.hyperspace",
         "title": "Travel through hyperspace!"
       }
     ]

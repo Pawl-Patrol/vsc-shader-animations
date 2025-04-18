@@ -2,7 +2,7 @@ import * as vscode from "vscode";
 import { AnimationConfiguration, AnimationName } from "../lib/types";
 
 export async function getConfig(): Promise<AnimationConfiguration> {
-  const config = vscode.workspace.getConfiguration("vsc-cursor-animations");
+  const config = vscode.workspace.getConfiguration("vsc-shader-animations");
   return {
     animations: config.get<AnimationName[]>("animations", []),
     cursorTrail: {

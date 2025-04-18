@@ -14,10 +14,10 @@ export class Patcher {
   async toggle(scriptFile: string) {
     if (fs.existsSync(this.backupFile)) {
       await this.restoreBackup();
-      this.needsRestart("Cursor Animations is disabled.");
+      this.needsRestart("Shader animations is disabled.");
     } else {
       await this.patchHtmlFile(scriptFile);
-      this.needsRestart("Cursor Animations is enabled.");
+      this.needsRestart("Shader animations is enabled.");
     }
   }
 
@@ -26,7 +26,7 @@ export class Patcher {
       await this.restoreBackup();
     }
     await this.patchHtmlFile(scriptFile);
-    this.needsRestart("Cursor Animations is reloaded.");
+    this.needsRestart("Shader animations is reloaded.");
   }
 
   private async patchHtmlFile(scriptFile: string) {

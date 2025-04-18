@@ -1,10 +1,26 @@
-# ✨ Vscode Cursor Animations
+# ✨ Vscode Shader Animations
 
-Adds fancy cursor/selection animations to your VSCode editor.
+Adds nonsense shader animations to your VSCode editor.
 
 ## 🎬 Demo
 
-![Demo](./demo/2025-04-09-181753.gif)
+### Cursor transitions
+
+![Demo](./demo/cursor-transition.gif)
+
+### Cursor trail
+
+![Demo](./demo/cursor-trail.gif)
+
+### Smoke
+
+![Demo](./demo/smoke.gif)
+
+### Hyperspace
+
+Takes you to a random file in your workspace.
+
+![Demo](./demo/hyperspace.gif)
 
 ## ⚠️ Warning
 
@@ -15,7 +31,7 @@ This extension modifies the vscode files directly. Use at your own risk. May bre
 1. Install the extension using `Install from VSIX` in the extensions tab or using the command line:
 
 ```bash
-   code --install-extension vscode-cursor-animations.vsix
+   code --install-extension vscode-shader-animations.vsix
 ```
 
 2. The extension needs permissions to modify the vscode files.
@@ -23,7 +39,7 @@ This extension modifies the vscode files directly. Use at your own risk. May bre
 - On Windows, run vscode as administrator.
 - On Mac/Linux, you can run `sudo chown -R $(whoami) "$(which code)"`
 
-3. Open the command palette (Ctrl+Shift+P or Cmd+Shift+P) and run `Toggle Cursor Animations` to enable the extension.
+3. Open the command palette (Ctrl+Shift+P or Cmd+Shift+P) and run `Toggle Shader Animations` to enable the extension.
 
 4. Reload the window according to the prompt.
 
@@ -43,11 +59,7 @@ This extension modifies the vscode files directly. Use at your own risk. May bre
 
 ## ⚙️ Configuration
 
-Currently the following options are available to control the animations:
-
-- `vsc-cursor-animations.velocity`: The speed of the animation in pixels per second. Default is `1.45`.
-- `vsc-cursor-animations.opacity`: Opacity of the overlay. Default is `0.65`.
-- `vsc-cursor-animations.backgroundImageUrl`: URL of a background image, which will be used as the background of the overlay. Default is `null`.
+![configuration](./demo/configuration.png)
 
 ## 🛠️ How it works
 

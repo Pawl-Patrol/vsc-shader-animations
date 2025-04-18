@@ -1,5 +1,5 @@
 {
-  "include": ["src/script/**/*.ts"],
+  "include": ["src/script/**/*.ts", "src/lib/**/*.ts", "src/devserver/**/*.ts"],
   "compilerOptions": {
     "module": "ESNext",
     "target": "ESNext",

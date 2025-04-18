@@ -1,18 +1,20 @@
 import * as vscode from "vscode";
-import { BridgeMessage } from "../common/types";
+import { AnimationConfiguration, AnimationName } from "../lib/types";
 
-export async function getConfig(): Promise<BridgeMessage> {
-  const config = vscode.workspace.getConfiguration("vsc-cursor-animations");
-  const velocity = config.get<number>("velocity");
-  const opacity = config.get<number>("opacity");
-  const imageUrl = config.get<string>("backgroundImageUrl");
+export async function getConfig(): Promise<AnimationConfiguration> {
+  const config = vscode.workspace.getConfiguration("vsc-shader-animations");
   return {
-    from: "extension",
-    type: "config",
-    payload: {
-      opacity: opacity ? Number(opacity) : 0.5,
-      velocityInPxsPerSecond: velocity ? Number(velocity) : 1.45,
-      backgroundImageUrl: imageUrl ? await resolveImage(imageUrl) : undefined,
+    animations: config.get<AnimationName[]>("animations", []),
+    cursorTransition: {
+      velocity: config.get<number>("cursor-transition.velocity", 0.5),
+      opacity: config.get<number>("cursor-transition.opacity", 0.5),
+      backgroundImageUrl: config.get<string>(
+        "cursor-transition.background-image-url"
+      ),
+      bloom: config.get<number>("cursor-transition.bloom", 1),
+    },
+    smoke: {
+      opacity: config.get<number>("smoke.opacity", 0.5),
     },
   };
 }

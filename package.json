@@ -1,8 +1,8 @@
 {
-  "name": "vsc-cursor-animations",
-  "displayName": "vsc-cursor-animations",
-  "description": "Fancy cursor animations for vscode",
-  "version": "1.0.0",
+  "name": "vsc-shader-animations",
+  "displayName": "Vscode Shader Animations",
+  "description": "Fancy animations for vscode",
+  "version": "2.0.0",
   "engines": {
     "vscode": "^1.99.0"
   },
@@ -14,51 +14,106 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/Pawl-Patrol/vsc-cursor-animations.git"
+    "url": "https://github.com/Pawl-Patrol/vsc-shader-animations.git"
   },
   "main": "./dist/extension.js",
   "contributes": {
-    "configuration": {
-      "title": "Cursor Animations",
-      "properties": {
-        "vsc-cursor-animations.velocity": {
-          "type": "number",
-          "default": 1.45,
-          "description": "Velocity of cursor animations in Pixels per second."
-        },
-        "vsc-cursor-animations.opacity": {
-          "type": "number",
-          "default": 0.65,
-          "description": "Opacity of selection area."
-        },
-        "vsc-cursor-animations.backgroundImageUrl": {
-          "type": "string",
-          "description": "Background image URL for the selections."
+    "configuration": [
+      {
+        "title": "Animations",
+        "properties": {
+          "vsc-shader-animations.animations": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "cursor-transition",
+                "cursor-trail",
+                "smoke"
+              ]
+            },
+            "default": [
+              "cursor-transition"
+            ],
+            "description": "Select one or more animations to use."
+          }
+        }
+      },
+      {
+        "title": "Smoke",
+        "properties": {
+          "vsc-shader-animations.smoke.opacity": {
+            "type": "number",
+            "default": 0.65,
+            "minimum": 0,
+            "maximum": 1,
+            "description": "Opacity of selection area"
+          }
+        }
+      },
+      {
+        "title": "Cursor Transition",
+        "properties": {
+          "vsc-shader-animations.cursor-transition.velocity": {
+            "type": "number",
+            "default": 1.45,
+            "minimum": 0,
+            "description": "Velocity of cursor in pixels per second"
+          },
+          "vsc-shader-animations.cursor-transition.opacity": {
+            "type": "number",
+            "default": 0.65,
+            "minimum": 0,
+            "maximum": 1,
+            "description": "Opacity of selection area"
+          },
+          "vsc-shader-animations.cursor-transition.bloom": {
+            "type": "number",
+            "default": 1,
+            "minimum": 0,
+            "maximum": 100,
+            "description": "Strength of the glowing effect. 0 = no glow, 100 = max glow."
+          },
+          "vsc-shader-animations.cursor-transition.background-image-url": {
+            "type": "string",
+            "description": "Background image url for the selections"
+          }
         }
       }
-    },
+    ],
     "commands": [
       {
-        "command": "vsc-cursor-animations.toggle",
-        "title": "Toggle Cursor Animations"
+        "command": "vsc-shader-animations.toggle",
+        "title": "Toggle Shader Animations"
+      },
+      {
+        "command": "vsc-shader-animations.reload",
+        "title": "Reload Shader Animations"
+      },
+      {
+        "command": "vsc-shader-animations.hyperspace",
+        "title": "Travel through hyperspace!"
       }
     ]
   },
   "scripts": {
     "vscode:prepublish": "npm run package",
-    "compile": "webpack",
-    "watch": "webpack --watch",
+    "compile": "webpack -c webpack.config.ts",
+    "watch": "webpack -c webpack.config.ts --watch",
     "package": "webpack --mode production --devtool hidden-source-map",
     "compile-tests": "tsc -p . --outDir out",
     "watch-tests": "tsc -p . -w --outDir out",
     "pretest": "npm run compile-tests && npm run compile && npm run lint",
     "lint": "eslint src",
-    "test": "vscode-test"
+    "test": "vscode-test",
+    "dev": "webpack serve -c webpack.config.dev.ts"
   },
   "devDependencies": {
     "@types/mocha": "^10.0.10",
     "@types/node": "20.x",
     "@types/vscode": "^1.99.0",
+    "@types/webpack": "^5.28.5",
+    "@types/webpack-dev-server": "^4.7.2",
     "@types/ws": "^8.18.1",
     "@typescript-eslint/eslint-plugin": "^8.28.0",
     "@typescript-eslint/parser": "^8.28.0",
@@ -66,10 +121,13 @@
     "@vscode/test-electron": "^2.4.1",
     "@webgpu/types": "^0.1.60",
     "eslint": "^9.23.0",
+    "html-webpack-plugin": "^5.6.3",
     "ts-loader": "^9.5.2",
+    "ts-node": "^10.9.2",
     "typescript": "^5.8.2",
     "webpack": "^5.98.0",
-    "webpack-cli": "^6.0.1"
+    "webpack-cli": "^6.0.1",
+    "webpack-dev-server": "^5.2.1"
   },
   "dependencies": {
     "ws": "^8.18.1"

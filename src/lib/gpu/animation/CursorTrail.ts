@@ -1,77 +1,43 @@
-import * as rect from "../../utils/rect";
-import { loadImage } from "../loadImage";
-import shaderCode from "./assets/cursor-trail.wgsl";
-import gradientUrl from "./assets/gradient.jpg";
+import shaderCode from "./assets/wiggly-worm.wgsl";
 import { AnimationBase } from "./base";
 import { loadShader } from "./loadShader";
 
 export type CursorTrailBuffers = {
-  timeBuffer: GPUBuffer;
-  progressBuffer: GPUBuffer;
-  sourceBuffer: GPUBuffer;
-  targetBuffer: GPUBuffer;
-  canvasBuffer: GPUBuffer;
+  uniformBuffer: GPUBuffer;
+  pointsInputBuffer: GPUBuffer;
+  pointsOutputBuffer: GPUBuffer;
 };
 
 export class CursorTrail extends AnimationBase {
   private buffers?: CursorTrailBuffers;
-  private pipeline?: GPURenderPipeline;
-  private bindGroup?: GPUBindGroup;
+  private imagePipeline?: GPURenderPipeline;
+  private pointsPipeline?: GPUComputePipeline;
   private bindGroupLayout?: GPUBindGroupLayout;
 
+  private frame = 0;
   private time = 0;
-  private progress = 0;
-  private duration = 0;
-  private source?: DOMRect;
-  private target?: DOMRect;
+  private cursor = { x: 0, y: 0 };
 
   async build() {
-    this.createBuffers();
-    this.createBindGroupLayout();
-    await this.createBindGroup();
-    this.createPipeline();
+    await this.createBuffers();
+    await this.createBindGroupLayout();
+    await this.createPipelines();
   }
 
   render(time: number, clear: boolean) {
     this.update(time);
-    if (this.source && this.target) {
-      this.draw(clear);
-    } else {
-      this.clear();
-    }
+    this.draw(clear);
   }
 
   private update(time: number) {
-    const deltaTime = time - this.time;
     this.time = time;
-
     const nextCursor = this.vscode.editor.findSuitableCursorRect();
-
+    const { x, y } = this.gpu.canvas.getBoundingClientRect();
     if (nextCursor) {
-      if (this.source) {
-        this.source = rect.lerp(this.progress, this.source, this.target!);
-      } else {
-        this.source = this.target;
-      }
-
-      if (!rect.equal(this.target, nextCursor)) {
-        this.target = nextCursor;
-        if (this.source) {
-          this.duration =
-            rect.distance(this.source, this.target) /
-            this.config.cursorTrail.velocity;
-          this.progress = 0;
-        } else {
-          this.progress = 1;
-        }
-      }
-    }
-
-    if (this.progress < 1) {
-      this.progress += deltaTime / this.duration;
-      if (this.progress > 1) {
-        this.progress = 1;
-      }
+      this.cursor = {
+        x: nextCursor.right - x,
+        y: (nextCursor.top + nextCursor.bottom) / 2 - y,
+      };
     }
   }
 
@@ -79,8 +45,16 @@ export class CursorTrail extends AnimationBase {
     this.updateBuffers();
 
     const commandEncoder = this.gpu.device.createCommandEncoder();
-    const textureView = this.gpu.context.getCurrentTexture().createView();
 
+    const bindGroup = this.getBindGroup();
+
+    const pointsPass = commandEncoder.beginComputePass();
+    pointsPass.setPipeline(this.pointsPipeline!);
+    pointsPass.setBindGroup(0, bindGroup);
+    pointsPass.dispatchWorkgroups(1);
+    pointsPass.end();
+
+    const textureView = this.gpu.context.getCurrentTexture().createView();
     const renderPassDescriptor: GPURenderPassDescriptor = {
       colorAttachments: [
         {
@@ -92,194 +66,153 @@ export class CursorTrail extends AnimationBase {
       ],
     };
 
-    const passEncoder = commandEncoder.beginRenderPass(renderPassDescriptor);
-    passEncoder.setPipeline(this.pipeline!);
-    passEncoder.setBindGroup(0, this.bindGroup!);
-    passEncoder.draw(4);
-    passEncoder.end();
+    const imagePass = commandEncoder.beginRenderPass(renderPassDescriptor);
+    imagePass.setPipeline(this.imagePipeline!);
+    imagePass.setBindGroup(0, bindGroup);
+    imagePass.draw(4);
+    imagePass.end();
 
     this.gpu.device.queue.submit([commandEncoder.finish()]);
+
+    this.frame++;
   }
 
   private async updateBuffers() {
-    const { x, y, width, height } = this.gpu.canvas.getBoundingClientRect();
-    this.gpu.device.queue.writeBuffer(
-      this.buffers!.canvasBuffer,
-      0,
-      new Float32Array([x, y, width, height])
+    const uniformArrayBuffer = new ArrayBuffer(
+      this.buffers!.uniformBuffer.size
     );
+    const floatView = new Float32Array(uniformArrayBuffer);
+    const intView = new Int32Array(uniformArrayBuffer);
+
+    const { width, height } = this.gpu.canvas.getBoundingClientRect();
+    floatView[0] = width;
+    floatView[1] = height;
+    floatView[2] = width / height;
+
+    floatView[4] = this.cursor.x;
+    floatView[5] = this.cursor.y;
+    floatView[6] = this.cursor.x;
+    floatView[7] = this.cursor.y;
+
+    floatView[8] = this.time / 1000;
+    intView[9] = this.frame;
+
     this.gpu.device.queue.writeBuffer(
-      this.buffers!.timeBuffer,
+      this.buffers!.uniformBuffer,
       0,
-      new Float32Array([this.time])
-    );
-    this.gpu.device.queue.writeBuffer(
-      this.buffers!.progressBuffer,
-      0,
-      new Float32Array([this.progress])
-    );
-    this.gpu.device.queue.writeBuffer(
-      this.buffers!.sourceBuffer,
-      0,
-      new Float32Array([
-        this.source!.left,
-        this.source!.top,
-        this.source!.right,
-        this.source!.bottom,
-      ])
-    );
-    this.gpu.device.queue.writeBuffer(
-      this.buffers!.targetBuffer,
-      0,
-      new Float32Array([
-        this.target!.left,
-        this.target!.top,
-        this.target!.right,
-        this.target!.bottom,
-      ])
+      uniformArrayBuffer
     );
   }
 
-  private createBuffers() {
+  private async createBuffers() {
     this.buffers = {
-      timeBuffer: this.gpu.device.createBuffer({
-        size: 8,
+      uniformBuffer: this.gpu.device.createBuffer({
+        size: 64,
         usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
       }),
-      progressBuffer: this.gpu.device.createBuffer({
-        size: 8,
-        usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
+      pointsInputBuffer: this.gpu.device.createBuffer({
+        size: 1024,
+        usage:
+          GPUBufferUsage.STORAGE |
+          GPUBufferUsage.COPY_SRC |
+          GPUBufferUsage.COPY_DST,
       }),
-      sourceBuffer: this.gpu.device.createBuffer({
-        size: 16,
-        usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
-      }),
-      targetBuffer: this.gpu.device.createBuffer({
-        size: 16,
-        usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
-      }),
-      canvasBuffer: this.gpu.device.createBuffer({
-        size: 16,
-        usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
+      pointsOutputBuffer: this.gpu.device.createBuffer({
+        size: 1024,
+        usage:
+          GPUBufferUsage.STORAGE |
+          GPUBufferUsage.COPY_SRC |
+          GPUBufferUsage.COPY_DST,
       }),
     };
   }
 
-  private createBindGroupLayout() {
+  private async createBindGroupLayout() {
     this.bindGroupLayout = this.gpu.device.createBindGroupLayout({
       entries: [
         {
           binding: 0,
-          visibility: GPUShaderStage.VERTEX | GPUShaderStage.FRAGMENT,
+          visibility: GPUShaderStage.COMPUTE | GPUShaderStage.FRAGMENT,
           buffer: { type: "uniform" },
         },
         {
           binding: 1,
-          visibility: GPUShaderStage.VERTEX | GPUShaderStage.FRAGMENT,
-          buffer: { type: "uniform" },
+          visibility: GPUShaderStage.COMPUTE | GPUShaderStage.FRAGMENT,
+          buffer: { type: "read-only-storage" },
         },
         {
           binding: 2,
-          visibility: GPUShaderStage.VERTEX | GPUShaderStage.FRAGMENT,
-          buffer: { type: "uniform" },
-        },
-        {
-          binding: 3,
-          visibility: GPUShaderStage.VERTEX | GPUShaderStage.FRAGMENT,
-          buffer: { type: "uniform" },
-        },
-        {
-          binding: 4,
-          visibility: GPUShaderStage.VERTEX | GPUShaderStage.FRAGMENT,
-          buffer: { type: "uniform" },
-        },
-        {
-          binding: 5,
-          visibility: GPUShaderStage.FRAGMENT,
-          texture: { sampleType: "float" },
-        },
-        {
-          binding: 6,
-          visibility: GPUShaderStage.FRAGMENT,
-          sampler: { type: "filtering" },
+          visibility: GPUShaderStage.COMPUTE | GPUShaderStage.FRAGMENT,
+          buffer: { type: "storage" },
         },
       ],
     });
   }
 
-  private async createBindGroup() {
-    const texture = await loadImage(
-      this.gpu.device,
-      this.config.cursorTrail.backgroundImageUrl || gradientUrl
-    );
-
-    const sampler = this.gpu.device.createSampler({
-      magFilter: "linear",
-      minFilter: "linear",
-    });
-
-    this.bindGroup = this.gpu.device.createBindGroup({
+  private getBindGroup() {
+    const pointsInputBuffer =
+      this.frame % 2 === 0
+        ? this.buffers!.pointsOutputBuffer
+        : this.buffers!.pointsInputBuffer;
+    const pointsOutputBuffer =
+      this.frame % 2 === 0
+        ? this.buffers!.pointsInputBuffer
+        : this.buffers!.pointsOutputBuffer;
+    return this.gpu.device.createBindGroup({
       layout: this.bindGroupLayout!,
       entries: [
         {
           binding: 0,
-          resource: { buffer: this.buffers!.timeBuffer },
+          resource: { buffer: this.buffers!.uniformBuffer },
         },
-
         {
           binding: 1,
-          resource: { buffer: this.buffers!.progressBuffer },
+          resource: { buffer: pointsInputBuffer },
         },
         {
           binding: 2,
-          resource: { buffer: this.buffers!.sourceBuffer },
-        },
-        {
-          binding: 3,
-          resource: { buffer: this.buffers!.targetBuffer },
-        },
-        {
-          binding: 4,
-          resource: { buffer: this.buffers!.canvasBuffer },
-        },
-        {
-          binding: 5,
-          resource: texture.createView(),
-        },
-        {
-          binding: 6,
-          resource: sampler,
+          resource: { buffer: pointsOutputBuffer },
         },
       ],
     });
   }
 
-  private createPipeline() {
+  private async createPipelines() {
     const shaderModule = loadShader(this.gpu.device, shaderCode, this.config);
 
-    this.pipeline = this.gpu.device.createRenderPipeline({
-      layout: this.gpu.device.createPipelineLayout({
-        bindGroupLayouts: [this.bindGroupLayout!],
-      }),
+    const pipelineLayout = this.gpu.device.createPipelineLayout({
+      bindGroupLayouts: [this.bindGroupLayout!],
+    });
+
+    this.pointsPipeline = this.gpu.device.createComputePipeline({
+      layout: pipelineLayout,
+      compute: {
+        module: shaderModule,
+        entryPoint: "points_compute_main",
+      },
+    });
+
+    this.imagePipeline = this.gpu.device.createRenderPipeline({
+      layout: pipelineLayout,
       vertex: {
         module: shaderModule,
-        entryPoint: "vertex_main",
+        entryPoint: "image_vertex_main",
       },
       fragment: {
         module: shaderModule,
-        entryPoint: "fragment_main",
+        entryPoint: "image_fragment_main",
         targets: [
           {
             format: this.gpu.format,
             blend: {
               color: {
-                srcFactor: "one",
-                dstFactor: "one",
+                srcFactor: "src-alpha",
+                dstFactor: "one-minus-src-alpha",
                 operation: "add",
               },
               alpha: {
                 srcFactor: "one",
-                dstFactor: "one",
+                dstFactor: "one-minus-src-alpha",
                 operation: "add",
               },
             },

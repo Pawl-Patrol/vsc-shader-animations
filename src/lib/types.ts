@@ -34,8 +34,8 @@ export type VscodeContext = {
 };
 
 export const ANIMATION_NAMES = [
+  "cursor-transition",
   "cursor-trail",
-  "wiggly-worm",
   "smoke",
 ] as const;
 export type AnimationName = (typeof ANIMATION_NAMES)[number];

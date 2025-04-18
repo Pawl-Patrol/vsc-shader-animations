@@ -26,7 +26,7 @@ export class Bridge implements IBridge {
 
   async waitForMessage<T extends BridgeMessageType>(type: T) {
     return {
-      animations: ["cursor-trail", "wiggly-worm"],
+      animations: ["cursor-transition"],
       cursorTrail: {
         opacity: 0.7,
         velocity: 0.65,

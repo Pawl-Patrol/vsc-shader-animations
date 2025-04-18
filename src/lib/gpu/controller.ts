@@ -5,9 +5,9 @@ import {
 } from "../../lib/types";
 import { AnimationBase } from "./animation/base";
 import { CursorTrail } from "./animation/CursorTrail";
+import { CursorTransition } from "./animation/CursorTransition";
 import { Hyperspace } from "./animation/Hyperspace";
 import { Smoke } from "./animation/Smoke";
-import { WigglyWorm } from "./animation/WigglyWorm";
 import { getWebGPUContext, GPUContext } from "./context";
 
 type AnimationState = {
@@ -24,8 +24,8 @@ export class AnimationController {
     private config: AnimationConfiguration
   ) {
     this.setupEvents();
+    this.initAnimationState("cursor-transition", CursorTransition);
     this.initAnimationState("cursor-trail", CursorTrail);
-    this.initAnimationState("wiggly-worm", WigglyWorm);
     this.initAnimationState("smoke", Smoke);
     this.initAnimationState("hyperspace", Hyperspace);
   }
@@ -77,6 +77,7 @@ export class AnimationController {
         this.stopAnimation(name);
       }
     }
+    this.clearCanvas();
   }
 
   async startAnimation(name: string) {
@@ -110,5 +111,22 @@ export class AnimationController {
     };
 
     requestAnimationFrame(animate);
+  }
+
+  clearCanvas() {
+    const commandEncoder = this.gpu.device.createCommandEncoder();
+    commandEncoder
+      .beginRenderPass({
+        colorAttachments: [
+          {
+            view: this.gpu.context.getCurrentTexture().createView(),
+            loadOp: "clear",
+            clearValue: { r: 0, g: 0, b: 0, a: 0 },
+            storeOp: "store",
+          },
+        ],
+      })
+      .end();
+    this.gpu.device.queue.submit([commandEncoder.finish()]);
   }
 }

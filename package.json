@@ -27,8 +27,8 @@
             "items": {
               "type": "string",
               "enum": [
+                "cursor-transition",
                 "cursor-trail",
-                "wiggly-worm",
                 "smoke"
               ]
             },
@@ -84,11 +84,11 @@
     "commands": [
       {
         "command": "vsc-shader-animations.toggle",
-        "title": "Toggle Cursor Animations"
+        "title": "Toggle Shader Animations"
       },
       {
         "command": "vsc-shader-animations.reload",
-        "title": "Reload Cursor Animations"
+        "title": "Reload Shader Animations"
       },
       {
         "command": "vsc-shader-animations.hyperspace",

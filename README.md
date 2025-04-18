@@ -1,4 +1,4 @@
-# ✨ Vscode Cursor Animations
+# ✨ Vscode Shader Animations
 
 Adds fancy cursor/selection animations to your VSCode editor.
 

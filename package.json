@@ -33,7 +33,7 @@
               ]
             },
             "default": [
-              "cursor-trail"
+              "cursor-transition"
             ],
             "description": "Select one or more animations to use."
           }
@@ -69,7 +69,7 @@
           },
           "vsc-shader-animations.cursor-transition.bloom": {
             "type": "number",
-            "default": 2,
+            "default": 1,
             "minimum": 0,
             "maximum": 100,
             "description": "Strength of the glowing effect. 0 = no glow, 100 = max glow."

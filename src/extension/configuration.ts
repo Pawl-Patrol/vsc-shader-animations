@@ -1,18 +1,18 @@
 import * as vscode from "vscode";
-import { BridgeMessage } from "../lib/types";
+import { AnimationConfiguration, AnimationName } from "../lib/types";
 
-export async function getConfig(): Promise<BridgeMessage<"config-response">> {
+export async function getConfig(): Promise<AnimationConfiguration> {
   const config = vscode.workspace.getConfiguration("vsc-cursor-animations");
-  const velocity = config.get<number>("velocity");
-  const opacity = config.get<number>("opacity");
-  const imageUrl = config.get<string>("backgroundImageUrl");
-  const wigglyWorm = config.get<boolean>("wigglyWorm");
   return {
-    velocityInPxsPerSecond: velocity ? Number(velocity) : 1.45,
-    backgroundImageUrl: imageUrl ? await resolveImage(imageUrl) : undefined,
-    wigglyWorm: Boolean(wigglyWorm),
-    shaderOptions: {
-      cursorTrailOpacity: opacity ? Number(opacity) : 0.5,
+    animations: config.get<AnimationName[]>("animations", []),
+    cursorTrail: {
+      velocity: config.get<number>("cursorTrail.velocity", 0.5),
+      opacity: config.get<number>("cursorTrail.opacity", 0.5),
+      backgroundImageUrl: config.get<string>("cursorTrail.backgroundImageUrl"),
+      bloom: config.get<number>("cursorTrail.bloom", 1),
+    },
+    smoke: {
+      opacity: config.get<number>("smoke.opacity", 0.5),
     },
   };
 }

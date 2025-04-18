@@ -33,12 +33,22 @@ export type VscodeContext = {
   editor: IEditor;
 };
 
+export const ANIMATION_NAMES = [
+  "cursor-trail",
+  "wiggly-worm",
+  "smoke",
+] as const;
+export type AnimationName = (typeof ANIMATION_NAMES)[number];
 export type AnimationConfiguration = {
-  velocityInPxsPerSecond: number;
-  backgroundImageUrl?: string;
-  wigglyWorm: boolean;
-  shaderOptions: {
-    cursorTrailOpacity: number;
+  animations: AnimationName[];
+  cursorTrail: {
+    velocity: number;
+    opacity: number;
+    bloom: number;
+    backgroundImageUrl?: string;
+  };
+  smoke: {
+    opacity: number;
   };
 };
 

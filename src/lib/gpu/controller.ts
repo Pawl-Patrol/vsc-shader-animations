@@ -1,7 +1,12 @@
-import { AnimationConfiguration, VscodeContext } from "../../lib/types";
+import {
+  ANIMATION_NAMES,
+  AnimationConfiguration,
+  VscodeContext,
+} from "../../lib/types";
 import { AnimationBase } from "./animation/base";
 import { CursorTrail } from "./animation/CursorTrail";
 import { Hyperspace } from "./animation/Hyperspace";
+import { Smoke } from "./animation/Smoke";
 import { WigglyWorm } from "./animation/WigglyWorm";
 import { getWebGPUContext, GPUContext } from "./context";
 
@@ -11,7 +16,7 @@ type AnimationState = {
 };
 
 export class AnimationController {
-  animations: Record<string, AnimationState>;
+  animations: Record<string, AnimationState> = {};
 
   constructor(
     private gpu: GPUContext,
@@ -19,16 +24,21 @@ export class AnimationController {
     private config: AnimationConfiguration
   ) {
     this.setupEvents();
-    this.animations = {
-      "cursor-trail": {
-        animation: new CursorTrail(this.gpu, this.vscode, this.config),
-      },
-      "wiggly-worm": {
-        animation: new WigglyWorm(this.gpu, this.vscode, this.config),
-      },
-      hyperspace: {
-        animation: new Hyperspace(this.gpu, this.vscode, this.config),
-      },
+    this.initAnimationState("cursor-trail", CursorTrail);
+    this.initAnimationState("wiggly-worm", WigglyWorm);
+    this.initAnimationState("smoke", Smoke);
+    this.initAnimationState("hyperspace", Hyperspace);
+  }
+
+  initAnimationState(
+    name: string,
+    Animation: new (
+      ...args: ConstructorParameters<typeof AnimationBase>
+    ) => AnimationBase
+  ) {
+    this.animations[name] = {
+      animation: new Animation(this.gpu, this.vscode, this.config),
+      startedAt: undefined,
     };
   }
 
@@ -60,11 +70,12 @@ export class AnimationController {
   }
 
   async onConfigChange() {
-    await this.startAnimation("cursor-trail");
-    if (this.config.wigglyWorm) {
-      await this.startAnimation("wiggly-worm");
-    } else {
-      this.stopAnimation("wiggly-worm");
+    for (const name of ANIMATION_NAMES) {
+      if (this.config.animations.includes(name)) {
+        await this.startAnimation(name);
+      } else {
+        this.stopAnimation(name);
+      }
     }
   }
 

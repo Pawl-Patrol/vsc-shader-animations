@@ -26,10 +26,14 @@ export class Bridge implements IBridge {
 
   async waitForMessage<T extends BridgeMessageType>(type: T) {
     return {
-      velocityInPxsPerSecond: 0.65,
-      wigglyWorm: true,
-      shaderOptions: {
-        cursorTrailOpacity: 0.7,
+      animations: ["cursor-trail", "wiggly-worm"],
+      cursorTrail: {
+        opacity: 0.7,
+        velocity: 0.65,
+        bloom: 0,
+      },
+      smoke: {
+        opacity: 0.65,
       },
     } as AnimationConfiguration as BridgeMessage<T>;
   }

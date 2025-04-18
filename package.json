@@ -18,30 +18,69 @@
   },
   "main": "./dist/extension.js",
   "contributes": {
-    "configuration": {
-      "title": "Cursor Animations",
-      "properties": {
-        "vsc-cursor-animations.velocity": {
-          "type": "number",
-          "default": 1.45,
-          "description": "Velocity of cursor animations in Pixels per second."
-        },
-        "vsc-cursor-animations.opacity": {
-          "type": "number",
-          "default": 0.65,
-          "description": "Opacity of selection area."
-        },
-        "vsc-cursor-animations.backgroundImageUrl": {
-          "type": "string",
-          "description": "Background image URL for the selections."
-        },
-        "vsc-cursor-animations.wigglyWorm": {
-          "type": "boolean",
-          "default": false,
-          "description": "Enables wiggly worm animation."
+    "configuration": [
+      {
+        "title": "Animations",
+        "properties": {
+          "vsc-cursor-animations.animations": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "cursor-trail",
+                "wiggly-worm",
+                "smoke"
+              ]
+            },
+            "default": [
+              "cursor-trail"
+            ],
+            "description": "Select one or more animations to use."
+          }
+        }
+      },
+      {
+        "title": "Smoke",
+        "properties": {
+          "vsc-cursor-animations.smoke.opacity": {
+            "type": "number",
+            "default": 0.65,
+            "minimum": 0,
+            "maximum": 1,
+            "description": "Opacity of selection area"
+          }
+        }
+      },
+      {
+        "title": "Cursor Trail",
+        "properties": {
+          "vsc-cursor-animations.cursor-trail.velocity": {
+            "type": "number",
+            "default": 1.45,
+            "minimum": 0,
+            "description": "Velocity of cursor in pixels per second"
+          },
+          "vsc-cursor-animations.cursor-trail.opacity": {
+            "type": "number",
+            "default": 0.65,
+            "minimum": 0,
+            "maximum": 1,
+            "description": "Opacity of selection area"
+          },
+          "vsc-cursor-animations.cursor-trail.bloom": {
+            "type": "number",
+            "default": 2,
+            "minimum": 0,
+            "maximum": 100,
+            "description": "Strength of the glowing effect. 0 = no glow, 100 = max glow."
+          },
+          "vsc-cursor-animations.cursor-trail.backgroundImageUrl": {
+            "type": "string",
+            "description": "Background image url for the selections"
+          }
         }
       }
-    },
+    ],
     "commands": [
       {
         "command": "vsc-cursor-animations.toggle",

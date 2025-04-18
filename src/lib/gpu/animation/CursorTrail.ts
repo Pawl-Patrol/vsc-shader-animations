@@ -26,10 +26,10 @@ export class CursorTrail extends AnimationBase {
   private target?: DOMRect;
 
   async build() {
-    await this.createBuffers();
-    await this.createBindGroupLayout();
+    this.createBuffers();
+    this.createBindGroupLayout();
     await this.createBindGroup();
-    await this.createPipeline();
+    this.createPipeline();
   }
 
   render(time: number, clear: boolean) {
@@ -59,7 +59,7 @@ export class CursorTrail extends AnimationBase {
         if (this.source) {
           this.duration =
             rect.distance(this.source, this.target) /
-            this.config.velocityInPxsPerSecond;
+            this.config.cursorTrail.velocity;
           this.progress = 0;
         } else {
           this.progress = 1;
@@ -140,7 +140,7 @@ export class CursorTrail extends AnimationBase {
     );
   }
 
-  private async createBuffers() {
+  private createBuffers() {
     this.buffers = {
       timeBuffer: this.gpu.device.createBuffer({
         size: 8,
@@ -165,7 +165,7 @@ export class CursorTrail extends AnimationBase {
     };
   }
 
-  private async createBindGroupLayout() {
+  private createBindGroupLayout() {
     this.bindGroupLayout = this.gpu.device.createBindGroupLayout({
       entries: [
         {
@@ -210,7 +210,7 @@ export class CursorTrail extends AnimationBase {
   private async createBindGroup() {
     const texture = await loadImage(
       this.gpu.device,
-      this.config.backgroundImageUrl ?? gradientUrl
+      this.config.cursorTrail.backgroundImageUrl ?? gradientUrl
     );
 
     const sampler = this.gpu.device.createSampler({
@@ -254,7 +254,7 @@ export class CursorTrail extends AnimationBase {
     });
   }
 
-  private async createPipeline() {
+  private createPipeline() {
     const shaderModule = loadShader(this.gpu.device, shaderCode, this.config);
 
     this.pipeline = this.gpu.device.createRenderPipeline({

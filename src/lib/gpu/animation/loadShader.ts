@@ -8,8 +8,23 @@ export function loadShader(
   return device.createShaderModule({
     code: shaderCode.replace(
       /\${(.*?)}/g,
-      (_, key: keyof typeof config.shaderOptions) =>
-        String(config.shaderOptions?.[key] ?? "")
+      (str, key) => getNestedValue(config, key) ?? str
     ),
   });
+}
+
+function getNestedValue(
+  config: AnimationConfiguration,
+  path: string
+): string | null {
+  const result = path.split(".").reduce(
+    (acc, key) => {
+      if (typeof acc === "object" && key in acc) {
+        return acc[key];
+      }
+      return undefined;
+    },
+    { config } as any
+  );
+  return result !== undefined ? String(result) : null;
 }

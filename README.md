@@ -67,3 +67,19 @@ This extension modifies the vscode files directly. Use at your own risk. May bre
 2. Both the script and the extension communicate via websockets.
 3. The script renderes a canvas element on top of the editor.
 4. Using the WebGPU API, the canvas is rendered with a custom shader.
+
+## Project structure
+
+The project consists of 3 main modules: extension, script and devserver.
+
+### Extension
+
+The vscode extension interacts with the vscode API and injects the custom script into the editor. It starts a websocket server to communicate with the script.
+
+### Script
+
+Injected into the editor html, it subscribes to the websocket and renders the canvas element on top of the editor.
+
+### Devserver
+
+Local development server for testing shaders with hot reloading. It can be started by running `npm run dev`.

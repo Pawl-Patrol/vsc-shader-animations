@@ -29,7 +29,8 @@
               "enum": [
                 "cursor-transition",
                 "cursor-trail",
-                "smoke"
+                "smoke",
+                "firework"
               ]
             },
             "default": [

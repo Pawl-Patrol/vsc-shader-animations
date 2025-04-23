@@ -6,6 +6,7 @@ import {
 import { AnimationBase } from "./animation/base";
 import { CursorTrail } from "./animation/CursorTrail";
 import { CursorTransition } from "./animation/CursorTransition";
+import { Firework } from "./animation/Firework";
 import { Hyperspace } from "./animation/Hyperspace";
 import { Smoke } from "./animation/Smoke";
 import { getWebGPUContext, GPUContext } from "./context";
@@ -27,6 +28,7 @@ export class AnimationController {
     this.initAnimationState("cursor-transition", CursorTransition);
     this.initAnimationState("cursor-trail", CursorTrail);
     this.initAnimationState("smoke", Smoke);
+    this.initAnimationState("firework", Firework);
     this.initAnimationState("hyperspace", Hyperspace);
   }
 

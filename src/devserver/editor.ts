@@ -26,6 +26,6 @@ export class Editor implements IEditor {
   }
 
   public findSuitableCursorRect() {
-    return new DOMRect(this.mouse.x, this.mouse.y, 400, 50);
+    return new DOMRect(this.mouse.x, this.mouse.y, 20, 50);
   }
 }

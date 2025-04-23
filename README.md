@@ -16,6 +16,10 @@ Adds nonsense shader animations to your VSCode editor.
 
 ![Demo](./demo/smoke.gif)
 
+### Firework
+
+![Demo](./demo/firework.gif)
+
 ### Hyperspace
 
 Takes you to a random file in your workspace.

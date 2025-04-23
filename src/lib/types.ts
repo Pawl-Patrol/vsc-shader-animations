@@ -37,6 +37,7 @@ export const ANIMATION_NAMES = [
   "cursor-transition",
   "cursor-trail",
   "smoke",
+  "firework",
 ] as const;
 export type AnimationName = (typeof ANIMATION_NAMES)[number];
 export type AnimationConfiguration = {
